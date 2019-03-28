@@ -15,5 +15,4 @@ ring.o: ring.c ring.h
 
 clean:
 	rm -rf *.o unittest
-#gcc -Wall -I$HOME/local/include/CUnit ring_test.c ring.c -L$HOME/local/lib -lcunit -o ring_test
-#gcc -Wall -I$HOME/local/include/CUnit ring_test.c ring.c -L$HOME/local/lib -lcunit -o unittest
+	
