@@ -1,0 +1,178 @@
+Script started on 2019-03-27 16:15:28-0600
+]0;bijan@bijan: ~/hello-world/project2/CU_ring_test[01;32mbijan@bijan[00m:[01;34m~/hello-world/project2/CU_ring_test[00m$ ./unittest 
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the ring buffer < in powers of 2 >: 8
+Please enter a string for writing to the buffer:  abcdefghik j
+You entered: abcdefghij
+
+And the number of characters for removal: 10
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 0    	Entries: 0	
+
+Buffer Contents Linear Queue (Tail to Head): ...
+Buffer Contents Circular Queue: ..."--------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+!!!~~> Expected buffer overflow at location: ... 0
+
+Tail: 0    	Head: 0    	Entries: 8	
+
+Buffer Contents Linear Queue (Tail to Head): ...abcdefgh
+Buffer Contents Circular Queue: ..."abcdefgh"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:136  - 0 == check_insert
+  Test:  
+
+===> read() function: ...
+
+!!!~~> Expected buffer empty at location: ... 0
+
+Tail: 0    	Head: 0    	Entries: 0	Data Out: abcdefgh 
+
+Buffer Contents Linear Queue (Tail to Head): ...
+Buffer Contents Circular Queue: ..."--------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:185  - 0 == check_read
+  Test:  
+
+===> entries() function: ... 
+Tail: 0    	Head: 0    	Entries: 0...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      3      3      1      2        0
+             asserts     22     22     20      2      n/a
+
+Elapsed time =    0.001 seconds
+Please enter (c) for continue, (q) for exit c
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the ring buffer < in powers of 2 >: 16
+Please enter a string for writing to the buffer:  abcdefghijklmnopqrst
+You entered: abcdefghijklmnopqrst
+
+And the number of characters for removal: 20
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 0    	Entries: 0	
+
+Buffer Contents Linear Queue (Tail to Head): ...
+Buffer Contents Circular Queue: ..."----------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+!!!~~> Expected buffer overflow at location: ... 0
+
+Tail: 0    	Head: 0    	Entries: 16	
+
+Buffer Contents Linear Queue (Tail to Head): ...abcdefghijklmnop
+Buffer Contents Circular Queue: ..."abcdefghijklmnop"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:136  - 0 == check_insert
+  Test:  
+
+===> read() function: ...
+
+!!!~~> Expected buffer empty at location: ... 0
+
+Tail: 0    	Head: 0    	Entries: 0	Data Out: abcdefghijklmnop 
+
+Buffer Contents Linear Queue (Tail to Head): ...
+Buffer Contents Circular Queue: ..."----------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:185  - 0 == check_read
+  Test:  
+
+===> entries() function: ... 
+Tail: 0    	Head: 0    	Entries: 0...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      3      3      1      2        0
+             asserts     38     38     36      2      n/a
+
+Elapsed time =    0.001 seconds
+Please enter (c) for continue, (q) for exit c
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the ring buffer < in powers of 2 >: 4
+Please enter a string for writing to the buffer:  abcd
+You entered: abcd
+
+And the number of characters for removal: 5
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 0    	Entries: 0	
+
+Buffer Contents Linear Queue (Tail to Head): ...
+Buffer Contents Circular Queue: ..."----"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 0    	Entries: 4	
+
+Buffer Contents Linear Queue (Tail to Head): ...abcd
+Buffer Contents Circular Queue: ..."abcd"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+
+!!!~~> Expected buffer empty at location: ... 0
+
+Tail: 0    	Head: 0    	Entries: 0	Data Out: abcd 
+
+Buffer Contents Linear Queue (Tail to Head): ...
+Buffer Contents Circular Queue: ..."----"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:185  - 0 == check_read
+  Test:  
+
+===> entries() function: ... 
+Tail: 0    	Head: 0    	Entries: 0...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      3      3      2      1        0
+             asserts     13     13     12      1      n/a
+
+Elapsed time =    0.001 seconds
+Please enter (c) for continue, (q) for exit q
+]0;bijan@bijan: ~/hello-world/project2/CU_ring_test[01;32mbijan@bijan[00m:[01;34m~/hello-world/project2/CU_ring_test[00m$ exit
+exit
+
+Script done on 2019-03-27 16:18:11-0600
