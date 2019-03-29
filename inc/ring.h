@@ -44,12 +44,12 @@ uint8_t Buffer_Full , Buffer_Empty ;					// A flag to indicate the buffer state.
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - Start {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
-ring_t *init( uint32_t  );
-int8_t insert( ring_t *, char  );
-int8_t read( ring_t *, char * );
-int32_t entries( ring_t * );
-uint8_t Power_Of_Two(uint32_t);
-void display ( char *, uint32_t,uint32_t, uint32_t, int32_t, char *);
+ring_t *init (uint32_t);
+int8_t insert (ring_t*, char);
+int8_t read (ring_t *, char*);
+int32_t entries (ring_t*);
+uint8_t Power_Of_Two (uint32_t);
+void display (ring_t*, int32_t, int32_t, char*) ; //char *, uint32_t,uint32_t, uint32_t, int32_t, char *);
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - End {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 

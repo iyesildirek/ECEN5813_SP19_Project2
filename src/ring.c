@@ -30,14 +30,14 @@ ring_t *init ( uint32_t length )
 		return NULL;
 	}
 	char *array;
-		
+
 	array = (char*)calloc(length , sizeof(char));		//array is the actual 'ring buffer' with the size 'length' provided by client
 
 	ring_t *p_Ring;
     p_Ring = &RingBuffer;
 	p_Ring->Length = length; 	   								// initialize the length of the buffer.
 	p_Ring->Buffer = array;
-	
+
 	return p_Ring;													// returns the pointer which is pointing to the buffer.
 }
 
@@ -153,7 +153,7 @@ int32_t entries ( ring_t *ring )
 
 /**######################################## entries() - End #######################################**/
 
-/*$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Power_Of_Two() - Start $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
+/**$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Power_Of_Two() - Start $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$**/
 
 /******************************************************************
   This is a check for 'length' value given by user,		   *
@@ -172,14 +172,18 @@ uint8_t Power_Of_Two (uint32_t num)
 	return 0;
 }
 
-/*$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Power_Of_Two() - End  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
+/**$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Power_Of_Two() - End  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$**/
 
-/*@@@@@@@@@@@@@@@@@@@@@@@    display() - Start @@@@@@@@@@@@@@@@@@@@@@@@*/
+/**@@@@@@@@@@@@@@@@@@@@@@@    display() - Start @@@@@@@@@@@@@@@@@@@@@@@@**/
 
-void display ( char *Buffer, uint32_t Head,uint32_t Tail, uint32_t Size, int32_t Entries, char* data_out)
+void display ( ring_t* ring, int32_t Size, int32_t Entries, char* data_out )//char *Buffer, uint32_t Head,uint32_t Tail, uint32_t Size, int32_t Entries, char* data_out)
 
 {
 	uint8_t circular_Q [100] ={'\0'};
+	uint32_t	Tail = ring->Outi,
+					Head = ring->Ini;
+	char		 * Buffer = ring->Buffer;
+	
 	if (data_out == NULL)
 		printf("\nTail: %-5d	Head: %-5d	Entries: %-d	\n\nBuffer Contents Linear Queue (Tail to Head): ...",\
 		Tail & (Size - 1), Head &(Size - 1), Entries);
