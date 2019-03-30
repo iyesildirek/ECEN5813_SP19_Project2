@@ -24,7 +24,7 @@
 ring_t RingBuffer;               //Global declaration of a buffer and it's pointer called RingBuffer/sample respectively.
 ring_t *sample = &RingBuffer;
 
-uint32_t length, old_length;
+uint32_t length, old_length, Head, Tail;
 int32_t Entries, old_Entries;
 uint32_t read_out;				   // Number of characters to be read using read() function
 char data_in[100] = {'\0'};		   // For insert test
@@ -75,13 +75,52 @@ int init_suite_1(void)
 
 		if (re_Size == 'y')
 		{
-			re_Size = 'n';
-			char *new_array;
 			old_Entries = entries(sample);
-			new_array = (char*)realloc(RingBuffer.Buffer, length * sizeof(char));
-			sample->Buffer = new_array;
-			sample->Length = length;
+			RingBuffer.Buffer = (char*)realloc(RingBuffer.Buffer, length * sizeof(char));
+			
+			Head = RingBuffer.Ini;
+			Tail = RingBuffer.Outi;
+			Entries = entries(sample);
+			
+			char temp_data;
+
+			if (length >= old_length)
+			{
+				if(Head >= Tail)
+				{
+					for( uint32_t i = Head ; i < old_length ; i++ )
+						*(sample->Buffer + (length - old_length) + i) = *(sample->Buffer + i);	// move data from head to the end of old size , to the new extension.
+
+				Head = Head + (length - old_length);																// move head to the new extension but keep tail in same place.
+				}
+				else
+				{
+					for( uint32_t i = Tail ; i < old_length ; i++ )
+					*(sample->Buffer + (length - old_length) + i) = *(sample->Buffer + i);		// move data from tail to the end of old size , to the new extension.
+
+				Tail = Tail + (length - old_length);																	// move tail to the new extension but keep head in same place.
+				}
+			}
+			else																														// Down sizing (lengh < old_length)
+			{
+				for (uint32_t i = 0 ; i < length ; i++ )
+					{
+						temp_data = *(sample->Buffer + (Tail + i)); 								    // move data from tail up to new length, back -
+						RingBuffer.Buffer[i] = temp_data;													// - to the first index of buffer with new length.
+					}
+
+				if (Entries >= length)
+					{ Head = length  ; Tail = 0; }
+				else
+					{ Head = Entries ; Tail = 0; }
+			}
+
+				sample->Outi = Tail ;
+				sample->Ini = Head ;
 		}
+
+		sample->Length = length;
+
 	return 0;
   }
 //(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((( init_suite_1() - End )))))))))))))))))))))))))))))))))))))))))))))))))
@@ -120,7 +159,7 @@ void test_insert_1(void)
 	if (re_Size == 'y')
 	{
 		re_Size = 'n';
-		display( sample, old_length, old_Entries, NULL ) ;		
+		display( sample, old_length, old_Entries, NULL ) ;
 	}		// data_out is not present when writing to the buffer, hence NULL
 	else
 	{
