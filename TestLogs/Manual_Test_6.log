@@ -1,0 +1,390 @@
+Script started on 2019-03-31 11:28:43-0600
+]0;bijan@bijan: ~/hello-world/project2/CU_ring_test[01;32mbijan@bijan[00m:[01;34m~/hello-world/project2/CU_ring_test[00m$ ./unittest 
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the ring buffer ( in powers of 2 ): 4
+You entered: 4
+
+Please enter a string for writing to the buffer:  abcd
+You entered: abcd
+
+And the number of characters for removal: 2
+You entered: 2
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 0    	Entries: 0	
+
+Buffer Contents Linear Queue (Tail to Head): ...
+Buffer Contents Circular Queue: ..."----"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 0    	Entries: 4	
+
+Buffer Contents Linear Queue (Tail to Head): ...abcd
+Buffer Contents Circular Queue: ..."abcd"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 2    	Head: 0    	Entries: 2	Data Out: ab 
+
+Buffer Contents Linear Queue (Tail to Head): ...cd
+Buffer Contents Circular Queue: ..."--cd"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 2    	Head: 0    	Entries: 2...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts     10     10     10      0      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the ring buffer ( in powers of 2 ): 8 16
+You entered: 16
+
+Please enter a string for writing to the buffer:  1234567890
+You entered: 1234567890
+
+And the number of characters for removal: 3
+You entered: 3
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 2    	Head: 0    	Entries: 2	
+
+Buffer Contents Linear Queue (Tail to Head): ...cd
+Buffer Contents Circular Queue: ..."--cd"
+
+Previous Buffer after resize:
+
+Tail: 14   	Head: 0    	Entries: 2	
+
+Buffer Contents Linear Queue (Tail to Head): ...cd
+Buffer Contents Circular Queue: ..."--------------cd"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 14   	Head: 10   	Entries: 12	
+
+Buffer Contents Linear Queue (Tail to Head): ...cd1234567890
+Buffer Contents Circular Queue: ..."1234567890----cd"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 1    	Head: 10   	Entries: 9	Data Out: cd1 
+
+Buffer Contents Linear Queue (Tail to Head): ...234567890
+Buffer Contents Circular Queue: ..."-234567890------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 1    	Head: 10   	Entries: 9...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts     17     17     17      0      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the ring buffer ( in powers of 2 ): 8
+You entered: 8
+
+Please enter a string for writing to the buffer:  ABCDEFGH
+You entered: ABCDEFGH
+
+And the number of characters for removal: 2
+You entered: 2
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 1    	Head: 10   	Entries: 9	
+
+Buffer Contents Linear Queue (Tail to Head): ...234567890
+Buffer Contents Circular Queue: ..."-234567890------"
+
+Previous Buffer after resize:
+
+Tail: 0    	Head: 0    	Entries: 8	
+
+Buffer Contents Linear Queue (Tail to Head): ...23456789
+Buffer Contents Circular Queue: ..."23456789"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+!!!~~> Expected buffer overflow at location: ... 0
+
+Tail: 0    	Head: 0    	Entries: 8	
+
+Buffer Contents Linear Queue (Tail to Head): ...23456789
+Buffer Contents Circular Queue: ..."23456789"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:251  - 0 == check_insert
+  Test:  
+
+===> read() function: ...
+Tail: 2    	Head: 0    	Entries: 6	Data Out: 23 
+
+Buffer Contents Linear Queue (Tail to Head): ...456789
+Buffer Contents Circular Queue: ..."--456789"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 2    	Head: 0    	Entries: 6...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      3      1        0
+             asserts      7      7      6      1      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the ring buffer ( in powers of 2 ): 4
+You entered: 4
+
+Please enter a string for writing to the buffer:  ABCDEF
+You entered: ABCDEF
+
+And the number of characters for removal: 2
+You entered: 2
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 2    	Head: 0    	Entries: 6	
+
+Buffer Contents Linear Queue (Tail to Head): ...456789
+Buffer Contents Circular Queue: ..."--456789"
+
+Previous Buffer after resize:
+
+Tail: 0    	Head: 0    	Entries: 4	
+
+Buffer Contents Linear Queue (Tail to Head): ...4567
+Buffer Contents Circular Queue: ..."4567"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+!!!~~> Expected buffer overflow at location: ... 0
+
+Tail: 0    	Head: 0    	Entries: 4	
+
+Buffer Contents Linear Queue (Tail to Head): ...4567
+Buffer Contents Circular Queue: ..."4567"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:251  - 0 == check_insert
+  Test:  
+
+===> read() function: ...
+Tail: 2    	Head: 0    	Entries: 2	Data Out: 45 
+
+Buffer Contents Linear Queue (Tail to Head): ...67
+Buffer Contents Circular Queue: ..."--67"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 2    	Head: 0    	Entries: 2...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      3      1        0
+             asserts      7      7      6      1      n/a
+
+Elapsed time =    0.002 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: n
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter a string for writing to the buffer:  ABCD
+You entered: ABCD
+
+And the number of characters for removal: 1
+You entered: 1
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 2    	Head: 0    	Entries: 2	
+
+Buffer Contents Linear Queue (Tail to Head): ...67
+Buffer Contents Circular Queue: ..."--67"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+!!!~~> Expected buffer overflow at location: ... 2
+
+Tail: 2    	Head: 2    	Entries: 4	
+
+Buffer Contents Linear Queue (Tail to Head): ...67AB
+Buffer Contents Circular Queue: ..."AB67"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:251  - 0 == check_insert
+  Test:  
+
+===> read() function: ...
+Tail: 3    	Head: 2    	Entries: 3	Data Out: 6 
+
+Buffer Contents Linear Queue (Tail to Head): ...7AB
+Buffer Contents Circular Queue: ..."AB-7"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 3    	Head: 2    	Entries: 3...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      3      1        0
+             asserts      8      8      7      1      n/a
+
+Elapsed time =    0.002 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the ring buffer ( in powers of 2 ): 32
+You entered: 32
+
+Please enter a string for writing to the buffer:  Hello World! PES  roject#2
+You entered: Hello World! Project#2
+
+And the number of characters for removal: 5
+You entered: 5
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 3    	Head: 2    	Entries: 3	
+
+Buffer Contents Linear Queue (Tail to Head): ...767
+Buffer Contents Circular Queue: ..."67-7"
+
+Previous Buffer after resize:
+
+Tail: 31   	Head: 2    	Entries: 3	
+
+Buffer Contents Linear Queue (Tail to Head): ...7AB
+Buffer Contents Circular Queue: ..."AB-----------------------------7"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 31   	Head: 24   	Entries: 25	
+
+Buffer Contents Linear Queue (Tail to Head): ...7ABHello World! Project#2
+Buffer Contents Circular Queue: ..."ABHello World! Project#2-------7"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 4    	Head: 24   	Entries: 20	Data Out: 7ABHe 
+
+Buffer Contents Linear Queue (Tail to Head): ...llo World! Project#2
+Buffer Contents Circular Queue: ..."----llo World! Project#2--------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 4    	Head: 24   	Entries: 20...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts     31     31     31      0      n/a
+
+Elapsed time =    0.003 seconds
+Continue? (Y)es, (N)o n
+]0;bijan@bijan: ~/hello-world/project2/CU_ring_test[01;32mbijan@bijan[00m:[01;34m~/hello-world/project2/CU_ring_test[00m$ exit
+exit
+
+Script done on 2019-03-31 11:35:11-0600

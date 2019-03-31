@@ -14,33 +14,37 @@
 * @brief The CUnit frame work
 *
 * @author Ismail Yesildirek, Bijan Kianian
-* @date March 24 2019
-* @version 1.0
+* @date March 31 2019
+* @version 1.2
 *
 */
 /**========================================================================*/
 #include "ring.h"
-/*========================================================================*/
-ring_t RingBuffer;               //Global declaration of a buffer and it's pointer called RingBuffer/sample respectively.
-ring_t *sample = &RingBuffer;
+/*=========================================================================*/
 
-uint32_t length, old_length;
+ring_t RingBuffer;                        //Global declaration of a buffer and it's pointer called RingBuffer/sample respectively.
+ring_t *sample = &RingBuffer;
+ring_t old_values;
+ring_t *p_old_values = &old_values;
+
+uint32_t length, old_length, Head, Tail;
 int32_t Entries, old_Entries;
-uint32_t read_out;				   // Number of characters to be read using read() function
-char data_in[100] = {'\0'};		   // For insert test
-char data_out[100] = {'\0'} ;				// For read test
-char circular_Q[100] = {'\0'};		// Contains ring buffer elements in linear fashion, for presentation purpose.
+uint32_t read_out;				  		  // Number of characters to be read using read() function
+char data_in[100] = {'\0'};		 	  // For insert test
+char data_out[100] = {'\0'} ;			  // For read test
+char circular_Q[100] = {'\0'};		  // Contains ring buffer elements in linear fashion, for presentation purpose.
+char tempbuffer[100] = {'\0'};		  // to save contents before resizing
 
 char temp;							    	// Used in FLUSH
 uint8_t startupFlag = 0;		// Used in buffer size change query
 char cnt ='y';				// Flag for continue, or quit
 char re_Size = 'y';
 uint8_t init_flag = 1;		// Indicating whether the program is at the startup stage
+
 //(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((( init_suite_1() - Start )))))))))))))))))))))))))))))))))))))))))))))))))
 
 int init_suite_1(void)
  {
-
 	if(re_Size == 'y')
 		{
 			do										// Loop for chacking power of two input for length of buffer
@@ -55,7 +59,6 @@ int init_suite_1(void)
 
 			} while((Power_Of_Two(length)) && (re_Size == 'y'));
 		}
-
 
 		printf("Please enter a string for writing to the buffer:  ");
 		FLUSH
@@ -75,13 +78,73 @@ int init_suite_1(void)
 
 		if (re_Size == 'y')
 		{
-			re_Size = 'n';
-			char *new_array;
 			old_Entries = entries(sample);
-			new_array = (char*)realloc(RingBuffer.Buffer, length * sizeof(char));
-			sample->Buffer = new_array;
-			sample->Length = length;
+			
+			for (uint32_t i=0 ; i < old_length ; i ++)
+				tempbuffer[i] = *(sample->Buffer + i);
+			
+			p_old_values->Buffer = tempbuffer;
+			p_old_values->Ini = sample->Ini;
+			p_old_values->Outi = sample->Outi;
+
+			RingBuffer.Buffer = (char*)realloc(RingBuffer.Buffer, length * sizeof(char));
+
+			Head = RingBuffer.Ini;
+			Tail = RingBuffer.Outi;
+			Entries = entries(sample);
+
+			/***********************************************/
+			/**   Extension (lengh > old_length) **/
+			/**********************************************/
+
+			if (length >= old_length)
+			{
+				if(Head >= Tail)
+				{
+					for( uint32_t i = Head ; i < old_length ; i++ )
+						*(sample->Buffer + (length - old_length) + i) = *(sample->Buffer + i);	// move data from head to the end of old size , to the new extension.
+
+				Head = Head + (length - old_length);																// move head to the new extension but keep tail in same place.
+				}
+				else
+				{
+					for( uint32_t i = Tail ; i < old_length ; i++ )
+						*(sample->Buffer + (length - old_length) + i) = *(sample->Buffer + i);	// move data from tail to the end of old size , to the new extension.
+
+				Tail = Tail + (length - old_length);																	// move tail to the new extension but keep head in same place.
+				}
+			}
+
+			/***********************************************/
+			/**  Reduction (lengh < old_length)  **/
+			/***********************************************/
+
+			else
+			{
+				sample->Length = length;
+
+				for (uint32_t i = 0; i < length ; i++ )
+					*(sample->Buffer + i) = tempbuffer[Tail + i];
+				
+				if((Head - Tail) >= length)
+				{
+					Buffer_Full = 1;
+					Tail = 0;
+					Head = 0;
+				}
+				else 
+				{
+					Tail = 0;
+					Entries = entries(sample);
+					Buffer_Full = 0;					// Check if after resize the new buffer is full
+					Head = Entries;
+				}
+			}
+			sample->Outi = Tail ;
+			sample->Ini = Head ;
 		}
+		sample->Length = length;
+
 	return 0;
   }
 //(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((( init_suite_1() - End )))))))))))))))))))))))))))))))))))))))))))))))))
@@ -120,8 +183,15 @@ void test_insert_1(void)
 	if (re_Size == 'y')
 	{
 		re_Size = 'n';
-		display( sample, old_length, old_Entries, NULL ) ;		
-	}		// data_out is not present when writing to the buffer, hence NULL
+		display( p_old_values, old_length, old_Entries, NULL ) ;		// data_out is not present when writing to the buffer, hence NULL
+
+		printf("\n\nPrevious Buffer after resize:\n");
+
+		if (old_Entries >= length)
+			Entries = length;
+
+		display( sample, length, Entries, NULL ) ;
+	}
 	else
 	{
 		Entries = entries( sample);
@@ -142,7 +212,7 @@ void test_insert_1(void)
 			break;
 		}
 	}
-	Entries = entries( sample);		//Update entries after intertion.
+	Entries = entries( sample);													//Update entries after intertion.
 	display( sample, length, Entries, NULL ) ;
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 }
@@ -236,7 +306,6 @@ int main (void)
 				scanf("%c", &re_Size);
 			}
 		}
-
 
 		CU_cleanup_registry();											// Cleaning the Registry
 	return CU_get_error();

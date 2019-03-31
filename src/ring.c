@@ -181,9 +181,10 @@ void display ( ring_t* ring, int32_t Size, int32_t Entries, char* data_out )//ch
 {
 	uint8_t circular_Q [100] ={'\0'};
 	uint32_t	Tail = ring->Outi,
-					Head = ring->Ini;
+				Head = ring->Ini,
+				length = ring->Length;
 	char		 * Buffer = ring->Buffer;
-	
+
 	if (data_out == NULL)
 		printf("\nTail: %-5d	Head: %-5d	Entries: %-d	\n\nBuffer Contents Linear Queue (Tail to Head): ...",\
 		Tail & (Size - 1), Head &(Size - 1), Entries);
@@ -193,8 +194,8 @@ void display ( ring_t* ring, int32_t Size, int32_t Entries, char* data_out )//ch
 
 	for ( int32_t i = 0; i <=Entries-1; i++)
 	{
-		putchar(*(Buffer +((Tail + i) & ( Size - 1))));
-		circular_Q[(Tail + i) & (Size - 1) ]= *(Buffer + ((Tail + i) & (Size - 1)));
+		putchar(*(Buffer +((Tail + i) & (length - 1))));
+		circular_Q[(Tail + i) & (Size - 1) ]= *(Buffer +((Tail + i) & (length - 1)));
 	}
 	printf("\nBuffer Contents Circular Queue: ...\"");
 	for (int32_t i = 0; i<=Size-1; i++)
