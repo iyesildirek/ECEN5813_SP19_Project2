@@ -13,62 +13,71 @@
 * @file ring_test.c
 * @brief The CUnit frame work
 *
-* @author Ismail Yesildirek, Bijan Kianian
-* @date March 31 2019
-* @version 1.2
+* @authors: Ismail Yesildirek, Bijan Kianian
+* @date April 1 2019
+* @version 1.4
 *
 */
-/**========================================================================*/
+
+/*========================================================================*/
 #include "ring.h"
-/*=========================================================================*/
+/*========================================================================*/
+
 
 ring_t RingBuffer;                        //Global declaration of a buffer and it's pointer called RingBuffer/sample respectively.
 ring_t *sample = &RingBuffer;
 ring_t old_values;
 ring_t *p_old_values = &old_values;
-
+char* BufferArray = NULL;
 uint32_t length, old_length, Head, Tail;
 int32_t Entries, old_Entries;
 uint32_t read_out;				  		  // Number of characters to be read using read() function
-char data_in[100] = {'\0'};		 	  // For insert test
-char data_out[100] = {'\0'} ;			  // For read test
-char circular_Q[100] = {'\0'};		  // Contains ring buffer elements in linear fashion, for presentation purpose.
-char tempbuffer[100] = {'\0'};		  // to save contents before resizing
+char data_in   [1024] = {'\0'};		 	  // For insert test
+char data_out  [1024] = {'\0'};			  // For read test
+char tempbuffer[1024] = {'\0'};		      // To save contents before resizing
 
-char temp;							    	// Used in FLUSH
-uint8_t startupFlag = 0;		// Used in buffer size change query
-char cnt ='y';				// Flag for continue, or quit
+char temp;							      // Used in FLUSH
+uint8_t startupFlag = 0;		          // Used in buffer size change query
+char cnt ='y';				              // Flag for continue, or quit
 char re_Size = 'y';
-uint8_t init_flag = 1;		// Indicating whether the program is at the startup stage
+uint8_t init_flag = 1;		              // Indicating whether the program is at the startup stage
 
-//(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((( init_suite_1() - Start )))))))))))))))))))))))))))))))))))))))))))))))))
+//(((((((((((((((((((((((((((((((((((((((( init_suite_1() - Start )))))))))))))))))))))))))))))))))))))))))))))))))
 
 int init_suite_1(void)
  {
+	if(init_flag == 1)
+	{
+		printf("\t\t#################################\n");
+		printf("\t\t#  Circular Buffer Manual Test  #\n");
+		printf("\t\t#################################\n\n");
+	}
+
 	if(re_Size == 'y')
 		{
-			do										// Loop for chacking power of two input for length of buffer
+			do							  // Loop for chacking power of two input for length of buffer
 			{
 				old_length = length;
-				printf("Please enter the size of the ring buffer ( in powers of 2 ): ");
+
+				printf("Please enter the size of the buffer ( in powers of 2 ): ");
 				scanf("%d", &length);
-				printf("You entered: %d\n\n", length);
+				printf("\nYou entered: %d\n\n", length);
 
 				if( Power_Of_Two (length) == 1)
-					printf(" Length is not a power of 2 number, please try again!\n");
+					printf(" Size must be in powers of 2 number, please try again!\n");
 
 			} while((Power_Of_Two(length)) && (re_Size == 'y'));
 		}
 
-		printf("Please enter a string for writing to the buffer:  ");
+		printf("Type a string for writing to the buffer:  ");
 		FLUSH
 		scanf("%[^\n]", data_in);
-		printf("You entered: %s\n\n", data_in);
+		printf("\nYou entered: %s\n\n", data_in);
 
 		printf("And the number of characters for removal: ");
 	    FLUSH
 		scanf("%d", &read_out);
-		printf("You entered: %d\n\n", read_out);
+		printf("\nYou entered: %d\n\n", read_out);
 		if( init_flag == 1)
 		{
 			sample = init(length);
@@ -78,14 +87,15 @@ int init_suite_1(void)
 
 		if (re_Size == 'y')
 		{
+			char tempbuffer[1024] = {'\0'};
 			old_Entries = entries(sample);
-			
-			for (uint32_t i=0 ; i < old_length ; i ++)
-				tempbuffer[i] = *(sample->Buffer + i);
-			
-			p_old_values->Buffer = tempbuffer;
-			p_old_values->Ini = sample->Ini;
-			p_old_values->Outi = sample->Outi;
+
+			for (uint32_t i = 0 ; i < old_Entries ; i ++)
+				tempbuffer[i] = *(sample->Buffer + ((sample->Outi + i) & (old_length-1)));
+
+			sample->Length = old_length;
+
+			p_old_values = update_Buffer(sample);
 
 			RingBuffer.Buffer = (char*)realloc(RingBuffer.Buffer, length * sizeof(char));
 
@@ -93,46 +103,44 @@ int init_suite_1(void)
 			Tail = RingBuffer.Outi;
 			Entries = entries(sample);
 
-			/***********************************************/
+			/**************************************/
 			/**   Extension (lengh > old_length) **/
-			/**********************************************/
+			/**************************************/
 
 			if (length >= old_length)
 			{
-				if(Head >= Tail)
-				{
-					for( uint32_t i = Head ; i < old_length ; i++ )
-						*(sample->Buffer + (length - old_length) + i) = *(sample->Buffer + i);	// move data from head to the end of old size , to the new extension.
-
-				Head = Head + (length - old_length);																// move head to the new extension but keep tail in same place.
-				}
-				else
+				if(Head <= Tail)
 				{
 					for( uint32_t i = Tail ; i < old_length ; i++ )
-						*(sample->Buffer + (length - old_length) + i) = *(sample->Buffer + i);	// move data from tail to the end of old size , to the new extension.
+						*(sample->Buffer + (length - old_length) + i) = *(sample->Buffer + i);	// Move data from tail to the end of old size , to the new extension.
 
-				Tail = Tail + (length - old_length);																	// move tail to the new extension but keep head in same place.
+					Tail = Tail + (length - old_length);										// Move tail to the new extension but keep head in same place.
+					sample->Length = length;
 				}
+
+				else
+					sample->Length = length;													// If Head > Tail just update length
+
 			}
 
-			/***********************************************/
+			/**************************************/
 			/**  Reduction (lengh < old_length)  **/
-			/***********************************************/
+			/**************************************/
 
 			else
 			{
-				sample->Length = length;
+				sample->Length = length;				// This is the reduced length.
 
 				for (uint32_t i = 0; i < length ; i++ )
-					*(sample->Buffer + i) = tempbuffer[Tail + i];
-				
-				if((Head - Tail) >= length)
+					*(sample->Buffer + i) = tempbuffer[i];
+
+				if( strlen(tempbuffer) > length)
 				{
 					Buffer_Full = 1;
 					Tail = 0;
 					Head = 0;
 				}
-				else 
+				else
 				{
 					Tail = 0;
 					Entries = entries(sample);
@@ -143,11 +151,11 @@ int init_suite_1(void)
 			sample->Outi = Tail ;
 			sample->Ini = Head ;
 		}
-		sample->Length = length;
 
 	return 0;
   }
-//(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((( init_suite_1() - End )))))))))))))))))))))))))))))))))))))))))))))))))
+
+//((((((((((((((((((((((((((((((((((( init_suite_1() - End )))))))))))))))))))))))))))))))))))
 
 //################################## clean_suite_1() - Start #################################
 
@@ -160,9 +168,9 @@ int clean_suite_1(void)
 	return 0;
 }
 
-//################################## clean_suite_1() - End #################################
+//################################## clean_suite_1() - End ###################################
 
-//{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{ test_init_1() - Start }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+//{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{ test_init_1() - Start }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 
 void test_init_1(void)
 {
@@ -170,9 +178,9 @@ void test_init_1(void)
 		CU_ASSERT(NULL != init(length));
 }
 
-//{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{ test_init_1() - End }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+//{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{ test_init_1() - End }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 
-// %%%%%%%%%%%%%%%%%%%%% test_insert_1() - Start %%%%%%%%%%%%%%%%%%%%
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% test_insert_1() - Start %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 void test_insert_1(void)
 {
@@ -183,79 +191,84 @@ void test_insert_1(void)
 	if (re_Size == 'y')
 	{
 		re_Size = 'n';
-		display( p_old_values, old_length, old_Entries, NULL ) ;		// data_out is not present when writing to the buffer, hence NULL
-
+		display( p_old_values, old_Entries, NULL ) ;		// data_out is not present when writing -
+															// -to the buffer, hence NULL
 		printf("\n\nPrevious Buffer after resize:\n");
 
 		if (old_Entries >= length)
 			Entries = length;
 
-		display( sample, length, Entries, NULL ) ;
+		display( update_Buffer(sample), Entries, NULL ) ;
 	}
 	else
 	{
 		Entries = entries( sample);
-		display( sample, length,Entries, NULL);
+		display( update_Buffer(sample), Entries, NULL ) ;
 	}
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
-	CU_ASSERT(-1 == insert(NULL, data_in[0]));					// Error checking for NULL pointer
+	CU_ASSERT(-1 == insert(NULL, data_in[0]));							// Error checking for NULL pointer
 	uint32_t count = strlen(data_in);
 
 	for(uint16_t i = 0; i <= count-1; i++)
 	{
 		uint32_t check_insert = insert(sample, data_in[i]);
 		CU_ASSERT(0 == check_insert);									//PASS
-		if (check_insert == -2)														//Buffer Full
+		if (check_insert == -2)											//Buffer Full
 		{
-			printf("\n\n!!!~~> Expected buffer overflow at location: ... %d\n", sample->Ini & (sample->Length-1));
+			printf("\n\n!!!~~> Expected buffer overflow at location: ... %d\n", \
+			sample->Ini & (sample->Length-1));
 			break;
 		}
 	}
-	Entries = entries( sample);													//Update entries after intertion.
-	display( sample, length, Entries, NULL ) ;
+	Entries = entries( sample);											//Update entries after intertion.
+	display( update_Buffer(sample), Entries, NULL ) ;
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 }
-// %%%%%%%%%%%%%%%%%%%%% test_insert_1() - End %%%%%%%%%%%%%%%%%%%%
 
-/*************************************************** test_read_1() - Start ************************************************************/
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% test_insert_1() - End %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+/******************************** test_read_1() - Start *************************************/
 
 void test_read_1(void)
 {
 
-	CU_ASSERT(-1 == read(NULL, data_out));		// Error checking for NULL pointer
+	CU_ASSERT(-1 == read(NULL, data_out));								// Error checking for NULL pointer
 
-	char data_out[100] = {'\0'};
+	char data_out[1024] = {'\0'};
 	if (read_out != 0 )
 	{
 		for (uint16_t i = 0; i<=read_out-1; i++)
 		{
 			uint32_t check_read = read(sample, data_out+i);
-			CU_ASSERT(0 == check_read);					//PASS
+			CU_ASSERT(0 == check_read);									//PASS
 			if(check_read == -2)
 			{
-				printf("\n\n!!!~~> Expected buffer empty at location: ... %d\n", sample->Outi & (sample->Length-1));
+				printf("\n\n!!!~~> Expected buffer empty at location: ... %d\n", \
+				sample->Outi & (sample->Length-1));
 				break;
 			}
 		}
-	Entries = entries (sample);
-	display( sample, length, Entries, data_out );
-	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	}
+	Entries = entries (sample);
+	display( update_Buffer(sample), Entries, data_out ) ;
+	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 }
-/***************************************************************** test_read_1() - End ************************************************/
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ test_entries_1() - Start ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/******************************************* test_read_1() - End *********************************/
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ test_entries_1() - Start ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void test_entries_1(void)
 {
 	CU_ASSERT(-1 == entries(NULL));
 	CU_ASSERT(-1 != entries(sample));
-	printf(" \nTail: %-5d	Head: %-5d	Entries: %-d...", sample->Outi & (sample->Length-1), sample->Ini & (sample->Length-1), entries( sample));
+	printf(" \nTail: %-5d	Head: %-5d	Entries: %-d...", sample->Outi & (sample->Length-1), \
+	sample->Ini & (sample->Length-1), entries( sample));
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ test_entries_1() - End ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ test_entries_1() - End ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 // ########################################### main() - Start #######################################
@@ -280,10 +293,11 @@ int main (void)
 
 		 // add test1 to suite1
 
-		if ((NULL == CU_add_test(pSuite1,  " \n\n===> init() function:", test_init_1))||
-			(NULL == CU_add_test(pSuite1,  " \n\n===> insert() function:", test_insert_1)) ||
-		    (NULL == CU_add_test(pSuite1,  " \n\n===> read() function:", test_read_1)) ||
+		if ((NULL == CU_add_test(pSuite1,  " \n\n===> init() function:"   , test_init_1   ))||
+			(NULL == CU_add_test(pSuite1,  " \n\n===> insert() function:" , test_insert_1 ))||
+		    (NULL == CU_add_test(pSuite1,  " \n\n===> read() function:"   , test_read_1   ))||
 		    (NULL == CU_add_test(pSuite1,  " \n\n===> entries() function:", test_entries_1)))
+
 
 		{
 			CU_cleanup_registry();
@@ -307,7 +321,7 @@ int main (void)
 			}
 		}
 
-		CU_cleanup_registry();											// Cleaning the Registry
+		CU_cleanup_registry();										// Cleaning the Registry
 	return CU_get_error();
 }
 

@@ -12,16 +12,20 @@
 * @file ring.c
 * @brief This source file contains a c program to implement a circular ring buffer.
 *
-* @author Ismail Yesildirek
-* @date March 24 2019
-* @version 1.1
+* @authors: Ismail Yesildirek, Bijan Kianian
+* @date April 1 2019
+* @version 1.2
 *
 */
-/**========================================================================*/
+
+/*========================================================================*/
 #include "ring.h"
+/*========================================================================*/
+
+
 /**######################################### init() - Start ###################################*/
 
-ring_t *init ( uint32_t length )
+ring_t *init ( uint32_t length)
 {
 
 	if (length == 0)
@@ -29,8 +33,7 @@ ring_t *init ( uint32_t length )
 		printf("ERROR!... Buffer length cannot be 0.");
 		return NULL;
 	}
-	char *array;
-
+	char* array;
 	array = (char*)calloc(length , sizeof(char));		//array is the actual 'ring buffer' with the size 'length' provided by client
 
 	ring_t *p_Ring;
@@ -57,16 +60,18 @@ int8_t insert ( ring_t *ring, char data )
 	uint32_t Tail = ring->Outi;
 	uint32_t length = ring->Length-1;
 
-		/* *******************************************************************************************************************
-		   The head and tail pointers will remain always between 0 and [Length - 1]. If it equals to tail
+		/********************************************************************************************************************
+		    The head and tail pointers will remain always between 0 and [Length - 1]. If it equals to tail
 			while the Buffer_Full flag is set, it means the buffer is full. The head will advance only
 			when Buffer is not full.
+			The Buffer_Full and Buffer_Empty flags help to indicate the status along with Head/Tail position.
+			Once Head = Tail, depending which flag is set, it indicates the boundry violation, hence no waste of buffer space.
 		 *********************************************************************************************************************/
 	if (Buffer_Full == 0)
 	{
 		ring->Buffer[Head] = data;
 		Head = (Head + 1) & length;
-		Buffer_Empty = 0;						// As soon as an insert event, the Buffer_Empty flag shall reset.
+		Buffer_Empty = 0;							// As soon as an insert event, the Buffer_Empty flag shall reset.
 
 		if(Head == Tail)
 			Buffer_Full = 1;
@@ -82,9 +87,9 @@ int8_t insert ( ring_t *ring, char data )
 	return value;
 }
 
-/*************************************************************** insert()- End ******************************************************/
+/******************************************** insert()- End ************************************************/
 
-/**--------------------------------------------------------------------- read() -Start -----------------------------------------------------------**/
+/**------------------------------------------ read() -Start -----------------------------------------------**/
 
 
 int8_t read ( ring_t *ring, char* data )
@@ -123,7 +128,7 @@ int8_t read ( ring_t *ring, char* data )
 }
 
 
-/**-------------------------------------------------------------------- read() - End -----------------------------------------------------------------**/
+/**----------------------------------------- read() - End -----------------------------------------**/
 
 /**######################################## entries () - Start ####################################**/
 
@@ -153,11 +158,11 @@ int32_t entries ( ring_t *ring )
 
 /**######################################## entries() - End #######################################**/
 
-/**$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Power_Of_Two() - Start $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$**/
+/**$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Power_Of_Two() - Start $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$**/
 
 /******************************************************************
-  This is a check for 'length' value given by user,		   *
-  making sure it's a power of 2.									   *
+  This is a check for 'length' value given by user,
+  making sure it's a power of 2.
 *******************************************************************/
 
 uint8_t Power_Of_Two (uint32_t num)
@@ -172,42 +177,63 @@ uint8_t Power_Of_Two (uint32_t num)
 	return 0;
 }
 
-/**$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Power_Of_Two() - End  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$**/
+/**$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Power_Of_Two() - End  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$**/
 
-/**@@@@@@@@@@@@@@@@@@@@@@@    display() - Start @@@@@@@@@@@@@@@@@@@@@@@@**/
+/**@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    display() - Start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@**/
 
-void display ( ring_t* ring, int32_t Size, int32_t Entries, char* data_out )//char *Buffer, uint32_t Head,uint32_t Tail, uint32_t Size, int32_t Entries, char* data_out)
-
+void display ( ring_t* ring, int32_t Entries, char* data_out )
 {
-	uint8_t circular_Q [100] ={'\0'};
+
 	uint32_t	Tail = ring->Outi,
 				Head = ring->Ini,
 				length = ring->Length;
-	char		 * Buffer = ring->Buffer;
+	char	  * Buffer = ring->Buffer;
+
 
 	if (data_out == NULL)
 		printf("\nTail: %-5d	Head: %-5d	Entries: %-d	\n\nBuffer Contents Linear Queue (Tail to Head): ...",\
-		Tail & (Size - 1), Head &(Size - 1), Entries);
+		Tail & (length - 1), Head &(length - 1), Entries);
 	else
 		printf("\nTail: %-5d	Head: %-5d	Entries: %-d	Data Out: %s \n\nBuffer Contents Linear Queue (Tail to Head): ...",\
-		Tail & (Size - 1), Head &(Size - 1), Entries, data_out);
+		Tail & (length - 1), Head &(length - 1), Entries, data_out);
 
 	for ( int32_t i = 0; i <=Entries-1; i++)
-	{
-		putchar(*(Buffer +((Tail + i) & (length - 1))));
-		circular_Q[(Tail + i) & (Size - 1) ]= *(Buffer +((Tail + i) & (length - 1)));
-	}
+		putchar(*(Buffer + ((Tail + i) & (length-1))));
+
 	printf("\nBuffer Contents Circular Queue: ...\"");
-	for (int32_t i = 0; i<=Size-1; i++)
+
+	for (int32_t i = 0; i<=length-1; i++)
 		{
-			if(circular_Q[i] == '\0') circular_Q[i] = '-' ;
-			putchar(circular_Q[i]);
+			if(Buffer[i] == '\0') Buffer[i] = '-' ;
+			putchar(Buffer[i]);
 		}
-		putchar('\"');
+
+	putchar('\"');
 }
 
+/**;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; update_Buffer () - Start ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; **/
 
+ring_t* update_Buffer (ring_t * Buffer)
+{
+	int32_t Entries = entries(Buffer);
+	ring_t update_Buffer;
+	ring_t* p_update_Buffer = &update_Buffer;
+	p_update_Buffer->Ini = Buffer->Ini;
+	p_update_Buffer->Outi = Buffer->Outi;
+	p_update_Buffer->Length = Buffer->Length;
 
+	uint32_t size = Buffer->Length;
 
+	char circular_Q[1024] = {'\0'};		      // Contains ring buffer elements in linear fashion, for presentation purpose.
+	char tempbuffer[1024] = {'\0'};		      // To save contents before resizing
 
+	for (uint32_t i = 0 ; i < Entries ; i ++)
+		tempbuffer[i] = *(Buffer->Buffer + ((Buffer->Outi + i) & (size-1)));
 
+	for (uint32_t i = 0 ; i < size ; i ++)
+		circular_Q [(Buffer->Outi + i) & (size-1)]= tempbuffer[i];
+
+	p_update_Buffer->Buffer = circular_Q;
+
+	return p_update_Buffer;
+}

@@ -1,0 +1,684 @@
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+		#################################
+		#  Circular Buffer Manual Test  #
+		#################################
+
+Please enter the size of the buffer ( in powers of 2 ): 2
+
+You entered: 2
+
+Type a string for writing to the buffer:  AB
+
+You entered: AB
+
+And the number of characters for removal: 1
+
+You entered: 1
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 0    	Entries: 0	
+
+Buffer Contents Linear Queue (Tail to Head): ...
+Buffer Contents Circular Queue: ..."--"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 0    	Entries: 2	
+
+Buffer Contents Linear Queue (Tail to Head): ...AB
+Buffer Contents Circular Queue: ..."AB"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 1    	Head: 0    	Entries: 1	Data Out: A 
+
+Buffer Contents Linear Queue (Tail to Head): ...B
+Buffer Contents Circular Queue: ..."-B"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 1    	Head: 0    	Entries: 1...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts      7      7      7      0      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the buffer ( in powers of 2 ): 4
+
+You entered: 4
+
+Type a string for writing to the buffer:  1234
+
+You entered: 1234
+
+And the number of characters for removal: 2
+
+You entered: 2
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 1    	Head: 0    	Entries: 1	
+
+Buffer Contents Linear Queue (Tail to Head): ...B
+Buffer Contents Circular Queue: ..."-B"
+
+Previous Buffer after resize:
+
+Tail: 3    	Head: 0    	Entries: 1	
+
+Buffer Contents Linear Queue (Tail to Head): ...B
+Buffer Contents Circular Queue: ..."---B"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+!!!~~> Expected buffer overflow at location: ... 3
+
+Tail: 3    	Head: 3    	Entries: 4	
+
+Buffer Contents Linear Queue (Tail to Head): ...B123
+Buffer Contents Circular Queue: ..."123B"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:216  - 0 == check_insert
+  Test:  
+
+===> read() function: ...
+Tail: 1    	Head: 3    	Entries: 2	Data Out: B1 
+
+Buffer Contents Linear Queue (Tail to Head): ...23
+Buffer Contents Circular Queue: ..."-23-"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 1    	Head: 3    	Entries: 2...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      3      1        0
+             asserts     10     10      9      1      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the buffer ( in powers of 2 ): 8
+
+You entered: 8
+
+Type a string for writing to the buffer:  abcdefg
+
+You entered: abcdefg
+
+And the number of characters for removal: 3
+
+You entered: 3
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 1    	Head: 3    	Entries: 2	
+
+Buffer Contents Linear Queue (Tail to Head): ...23
+Buffer Contents Circular Queue: ..."-23-"
+
+Previous Buffer after resize:
+
+Tail: 1    	Head: 3    	Entries: 2	
+
+Buffer Contents Linear Queue (Tail to Head): ...23
+Buffer Contents Circular Queue: ..."-23-----"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+!!!~~> Expected buffer overflow at location: ... 1
+
+Tail: 1    	Head: 1    	Entries: 8	
+
+Buffer Contents Linear Queue (Tail to Head): ...23abcdef
+Buffer Contents Circular Queue: ..."f23abcde"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FAILED
+    1. ring_test.c:216  - 0 == check_insert
+  Test:  
+
+===> read() function: ...
+Tail: 4    	Head: 1    	Entries: 5	Data Out: 23a 
+
+Buffer Contents Linear Queue (Tail to Head): ...bcdef
+Buffer Contents Circular Queue: ..."f---bcde"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 4    	Head: 1    	Entries: 5...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      3      1        0
+             asserts     14     14     13      1      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the buffer ( in powers of 2 ): 16
+
+You entered: 16
+
+Type a string for writing to the buffer:  12ABCDEFGH
+
+You entered: ABCDEFGH
+
+And the number of characters for removal: 3
+
+You entered: 3
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 4    	Head: 1    	Entries: 5	
+
+Buffer Contents Linear Queue (Tail to Head): ...bcdef
+Buffer Contents Circular Queue: ..."f---bcde"
+
+Previous Buffer after resize:
+
+Tail: 12   	Head: 1    	Entries: 5	
+
+Buffer Contents Linear Queue (Tail to Head): ...bcdef
+Buffer Contents Circular Queue: ..."f-----------bcde"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 12   	Head: 9    	Entries: 13	
+
+Buffer Contents Linear Queue (Tail to Head): ...bcdefABCDEFGH
+Buffer Contents Circular Queue: ..."fABCDEFGH---bcde"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 15   	Head: 9    	Entries: 10	Data Out: bcd 
+
+Buffer Contents Linear Queue (Tail to Head): ...efABCDEFGH
+Buffer Contents Circular Queue: ..."fABCDEFGH------e"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 15   	Head: 9    	Entries: 10...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts     15     15     15      0      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the buffer ( in powers of 2 ): 32
+
+You entered: 32
+
+Type a string for writing to the buffer:  Hello Wolrd!
+
+You entered: Hello Wolrd!
+
+And the number of characters for removal: 5
+
+You entered: 5
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 15   	Head: 9    	Entries: 10	
+
+Buffer Contents Linear Queue (Tail to Head): ...efABCDEFGH
+Buffer Contents Circular Queue: ..."fABCDEFGH------e"
+
+Previous Buffer after resize:
+
+Tail: 31   	Head: 9    	Entries: 10	
+
+Buffer Contents Linear Queue (Tail to Head): ...efABCDEFGH
+Buffer Contents Circular Queue: ..."fABCDEFGH----------------------e"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 31   	Head: 21   	Entries: 22	
+
+Buffer Contents Linear Queue (Tail to Head): ...efABCDEFGHHello Wolrd!
+Buffer Contents Circular Queue: ..."fABCDEFGHHello Wolrd!----------e"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 4    	Head: 21   	Entries: 17	Data Out: efABC 
+
+Buffer Contents Linear Queue (Tail to Head): ...DEFGHHello Wolrd!
+Buffer Contents Circular Queue: ..."----DEFGHHello Wolrd!-----------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 4    	Head: 21   	Entries: 17...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts     21     21     21      0      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the buffer ( in powers of 2 ): 64
+
+You entered: 64
+
+Type a string for writing to the buffer:  ~!@#$%^&*()
+
+You entered: ~!@#$%^&*()
+
+And the number of characters for removal: 5
+
+You entered: 5
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 4    	Head: 21   	Entries: 17	
+
+Buffer Contents Linear Queue (Tail to Head): ...DEFGHHello Wolrd!
+Buffer Contents Circular Queue: ..."----DEFGHHello Wolrd!-----------"
+
+Previous Buffer after resize:
+
+Tail: 4    	Head: 21   	Entries: 17	
+
+Buffer Contents Linear Queue (Tail to Head): ...DEFGHHello Wolrd!
+Buffer Contents Circular Queue: ..."----DEFGHHello Wolrd!-------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 4    	Head: 32   	Entries: 28	
+
+Buffer Contents Linear Queue (Tail to Head): ...DEFGHHello Wolrd!~!@#$%^&*()
+Buffer Contents Circular Queue: ..."----DEFGHHello Wolrd!~!@#$%^&*()--------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 9    	Head: 32   	Entries: 23	Data Out: DEFGH 
+
+Buffer Contents Linear Queue (Tail to Head): ...Hello Wolrd!~!@#$%^&*()
+Buffer Contents Circular Queue: ..."---------Hello Wolrd!~!@#$%^&*()--------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 9    	Head: 32   	Entries: 23...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts     20     20     20      0      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the buffer ( in powers of 2 ): 128
+
+You entered: 128
+
+Type a string for writing to the buffer:  \][';/.,|}{":?><
+
+You entered: \][';/.,|}{":?><
+
+And the number of characters for removal: 5
+
+You entered: 5
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 9    	Head: 32   	Entries: 23	
+
+Buffer Contents Linear Queue (Tail to Head): ...Hello Wolrd!~!@#$%^&*()
+Buffer Contents Circular Queue: ..."---------Hello Wolrd!~!@#$%^&*()--------------------------------"
+
+Previous Buffer after resize:
+
+Tail: 9    	Head: 32   	Entries: 23	
+
+Buffer Contents Linear Queue (Tail to Head): ...Hello Wolrd!~!@#$%^&*()
+Buffer Contents Circular Queue: ..."---------Hello Wolrd!~!@#$%^&*()------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 9    	Head: 48   	Entries: 39	
+
+Buffer Contents Linear Queue (Tail to Head): ...Hello Wolrd!~!@#$%^&*()\][';/.,|}{":?><
+Buffer Contents Circular Queue: ..."---------Hello Wolrd!~!@#$%^&*()\][';/.,|}{":?><--------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 14   	Head: 48   	Entries: 34	Data Out: Hello 
+
+Buffer Contents Linear Queue (Tail to Head): ... Wolrd!~!@#$%^&*()\][';/.,|}{":?><
+Buffer Contents Circular Queue: ..."-------------- Wolrd!~!@#$%^&*()\][';/.,|}{":?><--------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 14   	Head: 48   	Entries: 34...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts     25     25     25      0      n/a
+
+Elapsed time =    0.001 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the buffer ( in powers of 2 ): 256
+
+You entered: 256
+
+Type a string for writing to the buffer:     ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^
+
+You entered:    ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^
+
+And the number of characters for removal: 6
+
+You entered: 6
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 14   	Head: 48   	Entries: 34	
+
+Buffer Contents Linear Queue (Tail to Head): ... Wolrd!~!@#$%^&*()\][';/.,|}{":?><
+Buffer Contents Circular Queue: ..."-------------- Wolrd!~!@#$%^&*()\][';/.,|}{":?><--------------------------------------------------------------------------------"
+
+Previous Buffer after resize:
+
+Tail: 14   	Head: 48   	Entries: 34	
+
+Buffer Contents Linear Queue (Tail to Head): ... Wolrd!~!@#$%^&*()\][';/.,|}{":?><
+Buffer Contents Circular Queue: ..."-------------- Wolrd!~!@#$%^&*()\][';/.,|}{":?><----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 14   	Head: 110  	Entries: 96	
+
+Buffer Contents Linear Queue (Tail to Head): ... Wolrd!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^
+Buffer Contents Circular Queue: ..."-------------- Wolrd!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^--------------------------------------------------------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 20   	Head: 110  	Entries: 90	Data Out:  Wolrd 
+
+Buffer Contents Linear Queue (Tail to Head): ...!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^
+Buffer Contents Circular Queue: ..."--------------------!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^--------------------------------------------------------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 20   	Head: 110  	Entries: 90...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts     72     72     72      0      n/a
+
+Elapsed time =    0.010 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the buffer ( in powers of 2 ): 512
+
+You entered: 512
+
+Type a string for writing to the buffer:  111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666
+
+You entered: 111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666
+
+And the number of characters for removal: 50
+
+You entered: 50
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 20   	Head: 110  	Entries: 90	
+
+Buffer Contents Linear Queue (Tail to Head): ...!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^
+Buffer Contents Circular Queue: ..."--------------------!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^--------------------------------------------------------------------------------------------------------------------------------------------------"
+
+Previous Buffer after resize:
+
+Tail: 20   	Head: 110  	Entries: 90	
+
+Buffer Contents Linear Queue (Tail to Head): ...!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^
+Buffer Contents Circular Queue: ..."--------------------!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------¸z™‘ñúØ“˜©V-- †pµý--0†pµý----------`ç4}ö--&×û|ö--------------------------------------------------------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 20   	Head: 308  	Entries: 288	
+
+Buffer Contents Linear Queue (Tail to Head): ...!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666
+Buffer Contents Circular Queue: ..."--------------------!~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666-----¸z™‘ñúØ“˜©V-- †pµý--0†pµý----------`ç4}ö--&×û|ö--------------------------------------------------------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 70   	Head: 308  	Entries: 238	Data Out: !~!@#$%^&*()\][';/.,|}{":?><   ~~~~    !!!!    @@@ 
+
+Buffer Contents Linear Queue (Tail to Head): ...@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666
+Buffer Contents Circular Queue: ..."----------------------------------------------------------------------@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666-----¸z™‘ñúØ“˜©V--‚pµý-- ‚pµý----------`ç4}ö--&×û|ö--------------------------------------------------------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 70   	Head: 308  	Entries: 238...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts    252    252    252      0      n/a
+
+Elapsed time =    0.005 seconds
+Continue? (Y)es, (N)o y
+Do you wish to modify the buffer size? (Y)es, (N)o: y
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+Please enter the size of the buffer ( in powers of 2 ): 1024
+
+You entered: 1024
+
+Type a string for writing to the buffer:  The End!
+
+You entered: The End!
+
+And the number of characters for removal: 60
+
+You entered: 60
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 70   	Head: 308  	Entries: 238	
+
+Buffer Contents Linear Queue (Tail to Head): ...@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666
+Buffer Contents Circular Queue: ..."----------------------------------------------------------------------@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+
+Previous Buffer after resize:
+
+Tail: 70   	Head: 308  	Entries: 238	
+
+Buffer Contents Linear Queue (Tail to Head): ...@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666
+Buffer Contents Circular Queue: ..."----------------------------------------------------------------------@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666-----¸z™‘ñúØ“˜©V-- †pµý--0†pµý----------`ç4}ö--&×û|ö--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 70   	Head: 316  	Entries: 246	
+
+Buffer Contents Linear Queue (Tail to Head): ...@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666The  ¸z™
+Buffer Contents Circular Queue: ..."----------------------------------------------------------------------@     #####    $$$$$     %%%%%     ^^^^^111111111111111111111111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666The -¸z™‘ñúØ“˜©V-- †pµý--0†pµý----------`ç4}ö--&×û|ö--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 130  	Head: 316  	Entries: 186	Data Out: @     #####    $$$$$     %%%%%     ^^^^^11111111111111111111 
+
+Buffer Contents Linear Queue (Tail to Head): ...1111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666The  ¸z™
+Buffer Contents Circular Queue: ..."----------------------------------------------------------------------------------------------------------------------------------1111122222222222222222222222222222222333333333333333333333333333333333333444444444444444444444444444444444444444445555555555555555555555555555555555555555555556666666666666666666The -¸z™‘ñúØ“˜©V--‚pµý-- ‚pµý----------`ç4}ö--&×û|ö--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 130  	Head: 316  	Entries: 186...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      4      4      4      0        0
+             asserts     72     72     72      0      n/a
+
+Elapsed time =    0.022 seconds
+Continue? (Y)es, (N)o n

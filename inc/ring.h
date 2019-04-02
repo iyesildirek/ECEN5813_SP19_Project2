@@ -12,9 +12,9 @@
 * @file ring.h
 * @brief This header file provides the ring buffer prototypes, and buffer structure.
 *
-* @author Ismail Yesildirek & Bijan Kianian
-* @date March 27-2019
-* @version 1.1
+* @authors: Ismail Yesildirek & Bijan Kianian
+* @date April 1 2019
+* @version 1.2
 *
 */
 #ifndef RING_H
@@ -38,9 +38,9 @@ typedef struct
 	uint32_t Outi;
 } ring_t;
 
-ring_t RingBuffer;				
+ring_t RingBuffer;
 
-uint8_t Buffer_Full , Buffer_Empty ;					// A flag to indicate the buffer state. 0 == empty. 1 == full
+uint8_t Buffer_Full , Buffer_Empty ;	// A flag to indicate the buffer state.
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - Start {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
@@ -49,7 +49,8 @@ int8_t insert (ring_t*, char);
 int8_t read (ring_t *, char*);
 int32_t entries (ring_t*);
 uint8_t Power_Of_Two (uint32_t);
-void display (ring_t*, int32_t, int32_t, char*) ; //char *, uint32_t,uint32_t, uint32_t, int32_t, char *);
+void display (ring_t*, int32_t, char*) ; //char *, uint32_t,uint32_t, uint32_t, int32_t, char *);
+ring_t *update_Buffer ( ring_t* );
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - End {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
