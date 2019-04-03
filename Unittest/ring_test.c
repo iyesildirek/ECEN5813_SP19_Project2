@@ -29,7 +29,8 @@ ring_t *sample = &RingBuffer;
 ring_t old_values;
 ring_t *p_old_values = &old_values;
 char* BufferArray = NULL;
-uint32_t length, old_length, Head, Tail;
+uint32_t old_length, Head, Tail;
+uint32_t length = 0;
 int32_t Entries, old_Entries;
 uint32_t read_out;				  		  // Number of characters to be read using read() function
 char data_in   [1024] = {'\0'};		 	  // For insert test
@@ -63,8 +64,18 @@ int init_suite_1(void)
 				scanf("%d", &length);
 				printf("\nYou entered: %d\n\n", length);
 
-				if( Power_Of_Two (length) == 1)
-					printf(" Size must be in powers of 2 number, please try again!\n");
+				while(length <= 0)
+				{
+					printf("Size must be greather than 0\n");
+					printf("Try another number: \n");
+					scanf("%d", &length);
+					printf("\nYou entered: %d\n\n", length);					
+				}	
+
+				if (Power_Of_Two(length) == 1)
+				{
+					printf("Size must be in powers of 2 and greater than 0, please try again!\n");
+				}
 
 			} while((Power_Of_Two(length)) && (re_Size == 'y'));
 		}
