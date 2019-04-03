@@ -1,18 +1,21 @@
+# Reference http://nuclear.mutantstargoat.com/articles/make/ 
+
 CC=gcc
-LDIR=-L~/local/lib
-IDIR=-I~/local/include/CUnit 
-CFLAGS= -Wall -Werror
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/local/lib
+# -Iinc for header file location
+CFLAGS=-Wall -Werror -Iinc
 
-unittest: ring_test.o ring.o
-	$(CC) $(CFLAGS) $(IDIR) ring_test.o ring.o $(LDIR) -lcunit -o unittest
+# Source file location
+src = $(wildcard src/*.c)
+srcTest = $(wildcard Unittest/*.c)
 
-ring_test.o: ring_test.c ring.c ring.h
-	$(CC) -c ring_test.c
+# Generate object files
+obj = $(src:.c=.o) $(srcTest:.c=.o)
 
-ring.o: ring.c ring.h
-	$(CC) -c ring.c
+test: $(obj)
+	$(CC) -o $@ $^ $(CFLAGS) -lcunit
 
+.PHONY: clean
 clean:
-	rm -rf *.o unittest
+	rm -f $(obj) test
+	
 	
