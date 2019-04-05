@@ -1,0 +1,136 @@
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+		#################################
+		#  Circular Buffer Manual Test  #
+		#################################
+
+Please enter the size of the buffer ( in powers of 2 ): 16
+
+You entered: 16
+
+Type a string for writing to the buffer:  abcdefghijk
+
+You entered: abcdefghijk
+
+And the number of characters for removal: 4
+
+You entered: 4
+
+
+Suite: Basic_Test_Suite1
+
+  Test:  
+
+===> init() function: ...passed
+  Test:  
+
+===> insert() function: ...
+
+Previous Buffer Status:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 0    	Entries: 0	
+
+Buffer Contents Linear Queue (Tail to Head): ...
+Buffer Contents Circular Queue: ..."----------------"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tail: 0    	Head: 11   	Entries: 11	
+
+Buffer Contents Linear Queue (Tail to Head): ...abcdefghijk
+Buffer Contents Circular Queue: ..."abcdefghijk-----"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> read() function: ...
+Tail: 4    	Head: 11   	Entries: 7	Data Out: abcd 
+
+Buffer Contents Linear Queue (Tail to Head): ...efghijk
+Buffer Contents Circular Queue: ..."----efghijk-----"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> entries() function: ... 
+Tail: 4    	Head: 11   	Entries: 7...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> Data Validation: ...
+
+		################################
+		#     Data validation test     #
+		################################
+
+   "This function will compare a string entered by user in a"
+   "specified buffer,with the same data read from the buffer."
+
+Please enter the size of the buffer ( in powers of 2 ): 32
+
+You entered: 32
+
+Enter a string for this buffer: ~!@#$%^&*()_+|}{":?>;'\[]=-`
+
+You entered: ~!@#$%^&*()_+|}{":?>;'\[]=-`
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The data sent and received are equal!
+
+Buffer Input:  ~!@#$%^&*()_+|}{":?>;'\[]=-`
+Buffer Output: ~!@#$%^&*()_+|}{":?>;'\[]=-`
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~passed
+  Test:  
+
+===> Fibonacci Sequence: ...
+
+		################################
+		#      Fibonacci Sequence      #
+		################################
+
+     "This function will take two numbers from user and calculates"
+"the fibonacci sequence, then writes the numbers into a user defined buffer."
+
+Please enter the size of the buffer ( in powers of 2 ): 1024
+
+You entered: 1024
+
+Please enter two integers seperated by space: 1 2
+
+You entered: 1 and 2
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The fibonnaci sequence produced by 1 and 2
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765 10946 17711 28657 46368 75025 121393 196418 317811 514229 832040 1346269 2178309 3524578 5702887 9227465 14930352 24157817 39088169 63245986 102334155 165580141 267914296 433494437 701408733 1134903170 
+passed
+  Test:  
+
+===> ASCII Table: ...
+
+		################################
+		#          ASCII_Table         #
+		################################
+
+     "This function will write into the ring buffer the equivalent ascii"
+        "character of a decimal number between 0 and 255, then displays"
+               "the data read from the buffer on screen."
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\00\00\00\00\00\00\00\00\00\00	\00
+\00\00\00
+\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00 \00!\00"\00#\00$\00%\00&\00'\00(\00)\00*\00+\00,\00-\00.\00/\000\001\002\003\004\005\006\007\008\009\00:\00;\00<\00=\00>\00?\00@\00A\00B\00C\00D\00E\00F\00G\00H\00I\00J\00K\00L\00M\00N\00O\00P\00Q\00R\00S\00T\00U\00V\00W\00X\00Y\00Z\00[\00\\00]\00^\00_\00`\00a\00b\00c\00d\00e\00f\00g\00h\00i\00j\00k\00l\00m\00n\00o\00p\00q\00r\00s\00t\00u\00v\00w\00x\00y\00z\00{\00|\00}\00~\00\00\80\00\81\00\82\00\83\00\84\00\85\00\86\00\87\00\88\00\89\00\8A\00\8B\00\8C\00\8D\00\8E\00\8F\00\90\00\91\00\92\00\93\00\94\00\95\00\96\00\97\00\98\00\99\00\9A\00\9B\00\9C\00\9D\00\9E\00\9F\00\A0\00\A1\00\A2\00\A3\00\A4\00\A5\00\A6\00\A7\00\A8\00\A9\00\AA\00\AB\00\AC\00\AD\00\AE\00\AF\00\B0\00\B1\00\B2\00\B3\00\B4\00\B5\00\B6\00\B7\00\B8\00\B9\00\BA\00\BB\00\BC\00\BD\00\BE\00\BF\00\C0\00\C1\00\C2\00\C3\00\C4\00\C5\00\C6\00\C7\00\C8\00\C9\00\CA\00\CB\00\CC\00\CD\00\CE\00\CF\00\D0\00\D1\00\D2\00\D3\00\D4\00\D5\00\D6\00\D7\00\D8\00\D9\00\DA\00\DB\00\DC\00\DD\00\DE\00\DF\00\E0\00\E1\00\E2\00\E3\00\E4\00\E5\00\E6\00\E7\00\E8\00\E9\00\EA\00\EB\00\EC\00\ED\00\EE\00\EF\00\F0\00\F1\00\F2\00\F3\00\F4\00\F5\00\F6\00\F7\00\F8\00\F9\00\FA\00\FB\00\FC\00\FD\00\FE\00\FF\00
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      7      7      7      0        0
+             asserts   1616   1616   1616      0      n/a
+
+Elapsed time =    0.006 seconds
+Continue? (Y)es, (N)o n
