@@ -13,8 +13,8 @@
 * @brief This source file contains a c program to implement a circular ring buffer.
 *
 * @authors: Ismail Yesildirek, Bijan Kianian
-* @date April 1 2019
-* @version 1.2
+* @date April 5 2019
+* @version 1.3
 *
 */
 
@@ -27,19 +27,24 @@
 
 ring_t *init ( uint32_t length)
 {
+	
+	ring_t *p_Ring;
+	
+	char* array;
 
 	if (length == 0)
 	{
 		printf("ERROR!... Buffer length cannot be 0.");
 		return NULL;
 	}
-	char* array;
-	array = (char*)calloc(length , sizeof(char));		//array is the actual 'ring buffer' with the size 'length' provided by client
 
-	ring_t *p_Ring;
-    p_Ring = &RingBuffer;
-	p_Ring->Length = length; 	   								// initialize the length of the buffer.
+	array = (char*)calloc(length , sizeof(char));		//array is the actual 'ring buffer' with the size 'length' provided by client
+	p_Ring = (ring_t*)malloc(sizeof(ring_t));		    //p_Ring is the allocated buffer structure defined by cient.
+
+	p_Ring->Length = length; 	   								// initializing the buffer.
 	p_Ring->Buffer = array;
+	p_Ring->Ini = 0;
+	p_Ring->Outi = 0;
 
 	return p_Ring;													// returns the pointer which is pointing to the buffer.
 }
@@ -179,6 +184,37 @@ uint8_t Power_Of_Two (uint32_t num)
 
 /**$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Power_Of_Two() - End  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$**/
 
+/**)))))))))))))))))))))))))))))))))) sizeValidation () - Start ))))))))))))))))))))))))))))))))))))**/
+
+uint32_t sizeValidation (void)
+{
+	uint32_t size;
+	char temp;							      // Used in FLUSH
+	
+	do							  /* Loop for chacking power of two input for length of buffer */
+			{
+				printf("Please enter the size of the buffer ( in powers of 2 ): ");
+				FLUSH
+				uint8_t validNumber = scanf("%d", &size);
+								
+				while((size <= 1)||(validNumber != 1))
+				{
+					printf("\nInvalid input! ");
+					printf("Size must be a number greather than '1', try another number: ");
+					FLUSH
+					validNumber = scanf("%d", &size);
+				}
+				printf("\nYou entered: %d\n\n", size);
+
+				if (Power_Of_Two(size) == 1)
+					printf("Size must be in powers of 2 and greater than '1', please try again!\n");	
+
+			} while ( Power_Of_Two(size));
+			
+	return size;
+}
+/**)))))))))))))))))))))))))))))))))) sizeValidation () - End ))))))))))))))))))))))))))))))))))))))**/
+
 /**@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    display() - Start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@**/
 
 void display ( ring_t* ring, int32_t Entries, char* data_out )
@@ -237,3 +273,5 @@ ring_t* update_Buffer (ring_t * Buffer)
 
 	return p_update_Buffer;
 }
+
+
