@@ -10,14 +10,16 @@
 *
 *****************************************************************************/
 /**
-* @file ring_test.c
+* @file Unit_Test.c
 * @brief The CUnit frame work
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
-* @date April 5 2019
-* @version 1.5
+* @date April 6 2019
+* @version 1.6
 *
 */
+
+#define AUTO 0
 
 /*========================================================================*/
 #include "ring.h"
@@ -27,38 +29,62 @@ ring_t *sample;
 ring_t *p_old_values;
 ring_t *p_user1;
 ring_t *p_user2;
-ring_t* Ascii_buffer;
+ring_t *Ascii_buffer;
 
 uint32_t old_length, Head, Tail;
 uint32_t length = 0;
 int32_t Entries, old_Entries;
 uint32_t read_out;				  		  // Number of characters to be read using read() function
-char data_in   [1024] = {'\0'};		 	  // For insert test
-char data_out  [1024] = {'\0'};			  // For read test
-char tempbuffer[1024] = {'\0'};		      // To save contents before resizing
+uint32_t seed = 0;							  // Seed value for random# function
+char data_in   [MAX_LENGTH] = {'\0'};		 	  // For insert test
+char data_out  [MAX_LENGTH] = {'\0'};			  // For read test
+char tempbuffer[MAX_LENGTH] = {'\0'};		      // To save contents before resizing
 
 char temp;							      // Used in FLUSH
+
+#if !AUTO
 char cnt ='y';				              // Flag for continue, or quit
 char re_Size = 'y';
+#else
+uint8_t cnt = 1;				              // Flag for continue, or quit
+uint8_t  re_Size = 1;
+#endif
+
 uint8_t init_flag = 1;		              // Indicating whether the program is at the startup stage
 
-//(((((((((((((((((((((((((((((((((((((((( init_suite_1() - Start )))))))))))))))))))))))))))))))))))))))))))))))))
+/** ((((((((((((((((((((((((((((((((((( init_suite() - Start ))))))))))))))))))))))))))))))))))) **/
 
-int init_suite_1(void)
+int init_suite(void)
  {
+#if !AUTO
 	if(init_flag == 1)
 	{
 		printf("\t\t#################################\n");
-		printf("\t\t#  Circular Buffer Manual Test  #\n");
+		printf("\t\t#  Circular Buffer Auto Test  #\n");
 		printf("\t\t#################################\n\n");
 	}
 
 	if(re_Size == 'y')
 		{
+#else
+
+	if(re_Size == 1)
+		{
+#endif
+
+#if !AUTO
 			do							  // Loop for chacking power of two input for length of buffer
 			{
-				old_length = length;
 
+#else
+				old_length = length;
+				seed++;
+				length = randomValue(seed,10);
+#endif
+
+#if !AUTO
+
+				old_length = length;
 				printf("Please enter the size of the buffer ( in powers of 2 ): ");
 				uint8_t validNumber = scanf("%d", &length);
 
@@ -76,7 +102,16 @@ int init_suite_1(void)
 
 			} while((Power_Of_Two(length)) && (re_Size == 'y'));
 		}
+#else
+		}
+		seed++;
+		uint16_t strSize = randomValue(seed, MAX_LENGTH);		// Random # between 0 ~ 1024 for string length
 
+		for( uint16_t l = 1; l <= strSize ; l++)				// data_in holds the generated string with random length
+			data_in[l] = randomValue(data_in[l-1], 256);
+#endif
+
+#if !AUTO
 		printf("Type a string for writing to the buffer:  ");
 		FLUSH
 		scanf("%[^\n]", data_in);
@@ -86,6 +121,7 @@ int init_suite_1(void)
 	    FLUSH
 		scanf("%d", &read_out);
 		printf("\nYou entered: %d\n\n", read_out);
+
 		if( init_flag == 1)
 		{
 			sample = init(length);
@@ -95,7 +131,20 @@ int init_suite_1(void)
 
 		if (re_Size == 'y')
 		{
-			char tempbuffer[1024] = {'\0'};
+#else
+		seed++;
+		read_out = randomValue(seed, MAX_LENGTH);
+		if( init_flag == 1)
+		{
+			sample = init(length);
+			init_flag = 0;
+			re_Size = 0;
+		}
+
+		if (re_Size == 1)
+		{
+#endif
+			char tempbuffer[MAX_LENGTH] = {'\0'};
 			old_Entries = entries(sample);
 
 			for (uint32_t i = 0 ; i < old_Entries ; i ++)
@@ -105,7 +154,6 @@ int init_suite_1(void)
 
 			p_old_values = update_Buffer(sample);
 
-			//RingBuffer.Buffer = (char*)realloc(RingBuffer.Buffer, length * sizeof(char));
 			sample->Buffer = (char*)realloc(sample->Buffer, length * sizeof(char));
 
 			Head = sample->Ini;
@@ -164,69 +212,80 @@ int init_suite_1(void)
 	return 0;
   }
 
-/** ((((((((((((((((((((((((((((((((((( init_suite_1() - End ))))))))))))))))))))))))))))))))))) **/
+/** ((((((((((((((((((((((((((((((((((( init_suite() - End ))))))))))))))))))))))))))))))))))) **/
 
-/** ################################## clean_suite_1() - Start ################################# **/
+/** ################################## clean_suite() - Start ################################# **/
 
-int clean_suite_1(void)
+int clean_suite(void)
 
 {
+#if AUTO
+	if (cnt != 1)
+	{
+#else
+
 	if (cnt != 'y')
 	{
+#endif
 		free(sample->Buffer);
-		free(p_user1->Buffer);
-		free(p_user2->Buffer);
-		free(Ascii_buffer->Buffer);
 		free(sample);
-		free(p_user1);
-		free(p_user2);
-		free(Ascii_buffer);
 
+		free(p_user1->Buffer);
+		free(p_user1);
+
+		free(p_user2->Buffer);
+		free(p_user2);
+
+		free(Ascii_buffer->Buffer);
+		free(Ascii_buffer);
 	}
 
 	return 0;
 }
 
-/** ################################## clean_suite_1() - End ################################### **/
+/** ################################## clean_suite() - End ################################### **/
 
-/** {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{ test_init_1() - Start }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} **/
+/** {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{ test_init() - Start }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} **/
 
-void test_init_1(void)
+void test_init(void)
 {
 	if (init_flag == 1)
 		CU_ASSERT(NULL != init(length));
 }
 
-/** {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{ test_init_1() - End }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} **/
+/** {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{ test_init() - End }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} **/
 
-/** %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% test_insert_1() - Start %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% **/
+/** %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% test_insert() - Start %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% **/
 
-void test_insert_1(void)
+void test_insert(void)
 {
-	printf("\n\nPrevious Buffer Status:");
+#if !AUTO
 
-	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	 printf("\n\nPrevious Buffer Status:");
 
-	if (re_Size == 'y')
-	{
-		re_Size = 'n';
-		display( p_old_values, old_Entries, NULL ) ;		// data_out is not present when writing -
-															// -to the buffer, hence NULL
-		printf("\n\nPrevious Buffer after resize:\n");
+	 printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
-		if (old_Entries >= length)
-			Entries = length;
+	 if (re_Size == 'y')
+	 {
+		 re_Size = 'n';
+		 display( p_old_values, old_Entries, NULL ) ;		// data_out is not present when writing -
+															//to the buffer, hence NULL
+		 printf("\n\nPrevious Buffer after resize:\n");
 
-		display( update_Buffer(sample), Entries, NULL ) ;
-	}
-	else
-	{
-		Entries = entries( sample);
-		display( update_Buffer(sample), Entries, NULL ) ;
-	}
-	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		 if (old_Entries >= length)
+			 Entries = length;
 
-	CU_ASSERT(-1 == insert(NULL, data_in[0]));							// Error checking for NULL pointer
+		 display( update_Buffer(sample), Entries, NULL ) ;
+	 }
+	 else
+	 {
+		 Entries = entries( sample);
+		 display( update_Buffer(sample), Entries, NULL ) ;
+	 }
+	 printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+#endif
+
+	CU_ASSERT(-1 == insert(NULL, data_in[0]));			// Error checking for NULL pointer
 	uint32_t count = strlen(data_in);
 
 	for(uint16_t i = 0; i <= count-1; i++)
@@ -240,21 +299,26 @@ void test_insert_1(void)
 			break;
 		}
 	}
-	Entries = entries( sample);											//Update entries after intertion.
+	Entries = entries( sample);							//Update entries after intertion.
+
+
+#if !AUTO
 	display( update_Buffer(sample), Entries, NULL ) ;
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+#endif
+
 }
 
-/** %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% test_insert_1() - End %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%**/
+/** %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% test_insert() - End %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%**/
 
-/******************************** test_read_1() - Start *************************************/
+/******************************** test_read() - Start *************************************/
 
-void test_read_1(void)
+void test_read(void)
 {
 
 	CU_ASSERT(-1 == read(NULL, data_out));								// Error checking for NULL pointer
 
-	char data_out[1024] = {'\0'};
+	char data_out[MAX_LENGTH] = {'\0'};
 	if (read_out != 0 )
 	{
 		for (uint16_t i = 0; i<=read_out-1; i++)
@@ -270,24 +334,31 @@ void test_read_1(void)
 		}
 	}
 	Entries = entries (sample);
+
+#if !AUTO
 	display( update_Buffer(sample), Entries, data_out ) ;
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+#endif
+
 }
 
-/******************************************* test_read_1() - End *********************************/
+/******************************************* test_read() - End *********************************/
 
-/**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ test_entries_1() - Start ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**/
+/**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ test_entries() - Start ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**/
 
-void test_entries_1(void)
+void test_entries(void)
 {
 	CU_ASSERT(-1 == entries(NULL));
 	CU_ASSERT(-1 != entries(sample));
+
+#if !AUTO
 	printf(" \nTail: %-5d	Head: %-5d	Entries: %-d...", sample->Outi & (sample->Length-1), \
 	sample->Ini & (sample->Length-1), entries( sample));
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+#endif
 }
 
-/**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ test_entries_1() - End ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**/
+/**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ test_entries() - End ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**/
 
 /** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! test_DataValidation - Start !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!**/
 
@@ -298,27 +369,44 @@ void test_DataValidation(void)
 	uint8_t lastBufferEmptyState = Buffer_Empty;
 	int8_t check_insert, check_read;
 
-	printf("\n\n\t\t################################\n");
-	printf(    "\t\t#     Data validation test     #\n");
-	printf(    "\t\t################################\n\n");
+#if !AUTO
+	 printf("\n\n\t\t################################\n");
+	 printf(    "\t\t#     Data validation test     #\n");
+	 printf(    "\t\t################################\n\n");
 
-	printf("   \"This function will compare a string entered by user in a\"\n");
-	printf("   \"specified buffer,with the same data read from the buffer.\"\n\n");
+	 printf("   \"This function will compare a string entered by user in a\"\n");
+	 printf("   \"specified buffer,with the same data read from the buffer.\"\n\n");
 
 	size1 = sizeValidation();						// This function checks if user input a correct value for uffer size.
 
-	printf("Enter a string for this buffer: ");
+	 printf("Enter a string for this buffer: ");
 
-	FLUSH
-	scanf("%[^\n]", data_in);
+	 FLUSH
+	 scanf("%[^\n]", data_in);
 
-	printf("\nYou entered: %s\n\n", data_in);
+	 printf("\nYou entered: %s\n\n", data_in);
 
-	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	 printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+#endif
+
+#if AUTO
+	seed++;
+	size1 = randomValue (seed, 10);
+
+	seed++;
+		uint16_t strSize = randomValue(seed, MAX_LENGTH);		// Random # between 1 ~ MAX_LENGTH+1 for string size
+
+		for( uint16_t l = 0; l <= strSize ; l++)
+			{
+				seed++;
+				data_in[l] = randomValue(seed, 256);	// NOTE: data_in holds the generated string with random length.
+			}											// Each element of data_in is a random ASCII char( 0~255) generated
+														// by randomValue(seed, 256).*/
+#endif
 
 	p_user1 = init (size1);
 
-	CU_ASSERT(-1 == insert(NULL, 'a'));							       // Error checking for NULL pointer
+	CU_ASSERT(-1 == insert(NULL, 'a'));					// Error checking for NULL pointer
 
 	count = strlen(data_in);
 
@@ -326,6 +414,7 @@ void test_DataValidation(void)
 	{
 		check_insert = insert(p_user1, data_in[i]);
 		CU_ASSERT(0 == check_insert);									//PASS
+
 		if (check_insert == -2)											//Buffer Full
 		{
 			printf("\n\n!!!~~> Expected buffer overflow at location: ... %d\n", \
@@ -333,7 +422,10 @@ void test_DataValidation(void)
 			break;
 		}
 	}
+
+#if !AUTO
 		printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+#endif
 
 	Entries = entries (p_user1);
 
@@ -352,18 +444,21 @@ void test_DataValidation(void)
 		}
 
 	int8_t result = strncmp (data_in, data_out, Entries);				// Comparinf input data and data read from Buffer
+	CU_ASSERT(0 == result);
 
-	if ( result != 0 )
-	{
-		printf("The data sent and recived are not equal!\n\n");
-		printf("Buffer Input:  %s\nBuffer Output: %s\n", p_user1 -> Buffer, data_out);
-	}
-	else
-	{
-		printf("The data sent and received are equal!\n\n");
-		printf("Buffer Input:  %s\nBuffer Output: %s\n", p_user1 -> Buffer, data_out);
-	}
-	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+#if !AUTO
+	 if ( result != 0 )
+	 {
+		 printf("The data sent and recived are not equal!\n\n");
+		 printf("Buffer Input:  %s\nBuffer Output: %s\n", p_user1 -> Buffer, data_out);
+	 }
+	 else
+	 {
+		 printf("The data sent and received are equal!\n\n");
+		 printf("Buffer Input:  %s\nBuffer Output: %s\n", p_user1 -> Buffer, data_out);
+	 }
+	 printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+#endif
 
 	 for(uint8_t k = 0 ; k < count ; k++)
 	 {
@@ -373,7 +468,7 @@ void test_DataValidation(void)
 	 Buffer_Full = lastBufferFullState;			// Restoring previous buffer state
 	 Buffer_Empty = lastBufferEmptyState;
 }
-/** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! test_DataValidation - Start !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!**/
+/** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! test_DataValidation - End !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!**/
 
 /** &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& test_FibonacciSequence () - Start  &&&&&&&&&&&&&&&&&&&&&&&&&&&&&& **/
 
@@ -381,10 +476,13 @@ void test_FibonacciSequence (void)
 {
 	uint32_t size2, i, k;
 	int8_t check_insert;
-	uint8_t validNumber = 0;
+
 	uint8_t lastBufferFullState = Buffer_Full;		//Saving previous buffer state
 	uint8_t lastBufferEmptyState = Buffer_Empty;
+
+#if !AUTO
 	char InputNumbers[20];							// temp storage for two input numbers.
+	uint8_t validNumber = 0;
 
 	printf("\n\n\t\t################################\n");
 	printf(    "\t\t#      Fibonacci Sequence      #\n");
@@ -395,33 +493,47 @@ void test_FibonacciSequence (void)
 
 	size2 = sizeValidation();					// This function checks if user input a correct value for uffer size.
 	int32_t sequence[size2];					// interger array to store calculated series.
+#else
+	seed++;
+	size2 = randomValue (seed, 10);
+	int32_t sequence[size2];					// interger array to store calculated series.
+
+	sequence[0] = randomValue (seed, MAX_LENGTH);		// Random # between 0 ~ MAX_LENGTH for fibinacci series.
+	seed++;
+	sequence[1] = randomValue (seed, MAX_LENGTH);
+
+#endif
 
 	p_user2 = init (size2);						// Buffer p_user2 initiation
 	char * userBuffer = p_user2 -> Buffer;
 
+#if !AUTO
 	printf("Please enter two integers seperated by space: ");
 
-	do
-	{
-		FLUSH
-		scanf("%[^\n]", InputNumbers);
-		validNumber = sscanf(InputNumbers, "%d %d", &sequence[0], &sequence[1]);
-		printf("\nYou entered: %d and %d\n\n", sequence[0], sequence[1]);
-		if  (validNumber != 2)
-			printf("\nInvalid input! please try again\n");
+	 do
+	 {
+		 FLUSH
+		 scanf("%[^\n]", InputNumbers);
+		 validNumber = sscanf(InputNumbers, "%d %d", &sequence[0], &sequence[1]);
+		 printf("\nYou entered: %d and %d\n\n", sequence[0], sequence[1]);
+		 if  (validNumber != 2)
+			 printf("\nInvalid input! please try again\n");
 
-	}while (validNumber != 2);
+	 }while (validNumber != 2);
+#endif
 
 	for ( k = 0 ; k < size2 ; k++)
 	{
 		sequence[k+2] = sequence[k+1] + sequence[k];
-		sprintf(data_out, "%d", sequence[k]);				// Using data_out[1024] to keep converted numbers to chars
+		sprintf(data_out, "%d", sequence[k]);				// Using data_out[MAX_LENGTH] to keep converted numbers to chars
 		if(sequence[k] < 0) break;
 		strcat (data_in, " ");
 		strcat( data_in, data_out);							// Appending character numbers to gether in data_in as a string
 	}
 
+#if !AUTO
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+#endif
 
 	CU_ASSERT(-1 == insert(NULL, 'a'));						// Error checking for NULL pointer
 
@@ -438,14 +550,15 @@ void test_FibonacciSequence (void)
 				break;
 			}
 		}
-		
-		while (userBuffer[size2-1] != ' ')		// This loop eliminates incomplete numbers at the end of the list 
+
+		while (userBuffer[size2-1] != ' ')		// This loop eliminates incomplete numbers at the end of the list
 												// when the buffer if fully loaded.
 		{
 			userBuffer[size2-1] = '\0';
 			size2--;
 		}
-		
+
+#if !AUTO
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 	printf("The fibonnaci sequence produced by %d and %d\n", sequence[0], sequence[1]);
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
@@ -456,6 +569,8 @@ void test_FibonacciSequence (void)
 		 data_in[k]  = '\0';
 		 data_out[k] = '\0';
 	 }
+#endif
+
 	 Buffer_Full = lastBufferFullState;			// Restoring previous buffer state
 	 Buffer_Empty = lastBufferEmptyState;
 }
@@ -471,7 +586,7 @@ void test_ASCII_Table (void)
 	int8_t check_insert, check_read;
 	uint8_t lastBufferFullState = Buffer_Full;		//Saving previous buffer state
 	uint8_t lastBufferEmptyState = Buffer_Empty;
-
+#if !AUTO
 	printf("\n\n\t\t################################\n");
 	printf(    "\t\t#          ASCII_Table         #\n");
 	printf(    "\t\t################################\n\n");
@@ -480,21 +595,20 @@ void test_ASCII_Table (void)
 	printf("        \"character of a decimal number between 0 and 255, then displays\"\n");
 	printf("               \"the data read from the buffer on screen.\"\n\n");
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   						
+#endif
+
 	Ascii_buffer = init (256);
 	CU_ASSERT(-1 == insert(NULL, 'a'));						// Error checking for NULL pointer
 	for( i = 0; i <= 255 ; i++)
 		{
-
 			check_insert = insert(Ascii_buffer, i);	// Writing the string of converted numbers to chars into the ring buffer.
 			CU_ASSERT(0 == check_insert);
-
 		}
 
-
 	CU_ASSERT(-1 == read(NULL, data_out));							// Error checking for NULL pointer
+#if !AUTO
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-
+#endif
 		for ( i = 0; i <= 255; i++)									// Reading all input characters and storing into data_out
 		{
 			check_read = read(Ascii_buffer, data_out+i);
@@ -505,16 +619,17 @@ void test_ASCII_Table (void)
 				Ascii_buffer->Ini & (Ascii_buffer->Length-1));
 				break;
 			}
-
+#if !AUTO
 			printf("%c", *(data_out + i));
 			putchar('\0');
-
 		}
 	printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+#else
+		}
+#endif
 
 	for (k = 0 ; k < 256 ; k++)
 		data_out[k] = '\0';
-		
 
 	Buffer_Full = lastBufferFullState;			// Restoring previous buffer state
 	Buffer_Empty = lastBufferEmptyState;
@@ -534,8 +649,11 @@ int main (void)
 			return CU_get_error();
 
 		// Add suite1 to registry
-
-		pSuite1 = CU_add_suite("Basic_Test_Suite1\n", init_suite_1, clean_suite_1);
+#if !AUTO
+		pSuite1 = CU_add_suite("Basic_Manual_Test_Suite1\n", init_suite, clean_suite);
+#else
+		pSuite1 = CU_add_suite("Basic_Auto_Test_Suite1\n", init_suite, clean_suite);
+#endif
 		if (NULL == pSuite1)
 		{
 			CU_cleanup_registry();
@@ -544,10 +662,10 @@ int main (void)
 
 		 // add test1 to suite1
 
-		if ((NULL == CU_add_test(pSuite1,  " \n\n===> init() function:"    , test_init_1   ))||
-			(NULL == CU_add_test(pSuite1,  " \n\n===> insert() function:"  , test_insert_1 ))||
-		    (NULL == CU_add_test(pSuite1,  " \n\n===> read() function:"    , test_read_1   ))||
-		    (NULL == CU_add_test(pSuite1,  " \n\n===> entries() function:" , test_entries_1))||
+		if ((NULL == CU_add_test(pSuite1,  " \n\n===> init() function:"    , test_init   ))||
+			(NULL == CU_add_test(pSuite1,  " \n\n===> insert() function:"  , test_insert ))||
+		    (NULL == CU_add_test(pSuite1,  " \n\n===> read() function:"    , test_read   ))||
+		    (NULL == CU_add_test(pSuite1,  " \n\n===> entries() function:" , test_entries))||
 			(NULL == CU_add_test(pSuite1,  " \n\n===> Data Validation:"    , test_DataValidation))||
 			(NULL == CU_add_test(pSuite1,  " \n\n===> Fibonacci Sequence:" , test_FibonacciSequence))||
 			(NULL == CU_add_test(pSuite1,  " \n\n===> ASCII Table:" 	   , test_ASCII_Table)))
@@ -557,24 +675,40 @@ int main (void)
 			return CU_get_error();
 		}
 
-	while(cnt =='y')
+#if !AUTO
+	while(cnt == 'y')
+	{
+#else
+	int32_t loop = LOOP_COUNT;
+	while(loop > 0)
+	{
+#endif
+		CU_basic_set_mode(CU_BRM_VERBOSE);
+		CU_basic_run_tests();									// OUTPUT to the screen
+#if !AUTO
+		printf("Continue? (Y)es, (N)o ");
+		FLUSH
+		scanf("%c", &cnt);
+		scanf("%c", &temp);
+#else
+		seed++;
+		re_Size = randomValue(seed, 2);
+		loop--;
+	}
+#endif
+#if !AUTO
+		if (cnt =='y')
 		{
-			CU_basic_set_mode(CU_BRM_VERBOSE);
-
-			CU_basic_run_tests();									// OUTPUT to the screen
-
-			printf("Continue? (Y)es, (N)o ");
-			FLUSH
-			scanf("%c", &cnt);
-			scanf("%c", &temp);
-			if (cnt =='y')
-			{
-				printf("Do you wish to modify the buffer size? (Y)es, (N)o: ");
-				scanf("%c", &re_Size);
-			}
+			printf("Do you wish to modify the buffer size? (Y)es, (N)o: ");
+			scanf("%c", &re_Size);
 		}
 
-		CU_cleanup_registry();										// Cleaning the Registry
+	}
+#else
+	printf("Auto test result for %d cycles.\n\n", LOOP_COUNT);
+#endif
+
+	CU_cleanup_registry();										// Cleaning the Registry
 	return CU_get_error();
 }
 

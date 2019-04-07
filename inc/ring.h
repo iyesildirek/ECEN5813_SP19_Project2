@@ -13,12 +13,15 @@
 * @brief This header file provides the ring buffer prototypes, and buffer structure.
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
-* @date April 5 2019
-* @version 1.3
+* @date April 6 2019
+* @version 1.4
 *
 */
+
+
 #ifndef RING_H
 #define RING_H
+
 
 #include "CUnit/CUnit.h"
 #include "CUnit/Basic.h"
@@ -27,7 +30,11 @@
 #include <string.h>
 #include <stdint.h>
 
+
 #define FLUSH 	fflush(stdin); scanf("%c", &temp);		// Flushing key board buffer
+#define MAX_LENGTH 1024
+#define LOOP_COUNT 5
+
 typedef char uint_8;
 
 typedef struct
@@ -47,9 +54,10 @@ int8_t insert (ring_t*, char);
 int8_t read (ring_t *, char*);
 int32_t entries (ring_t*);
 uint8_t Power_Of_Two (uint32_t);
-void display (ring_t*, int32_t, char*); 
+void display (ring_t*, int32_t, char*);
 ring_t *update_Buffer ( ring_t* );
 uint32_t sizeValidation (void);
+uint16_t randomValue ( uint32_t , uint16_t );
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - End {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 

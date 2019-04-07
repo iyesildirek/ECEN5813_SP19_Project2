@@ -13,8 +13,8 @@
 * @brief This source file contains a c program to implement a circular ring buffer.
 *
 * @authors: Ismail Yesildirek, Bijan Kianian
-* @date April 5 2019
-* @version 1.3
+* @date April 6 2019
+* @version 1.4
 *
 */
 
@@ -27,9 +27,9 @@
 
 ring_t *init ( uint32_t length)
 {
-	
+
 	ring_t *p_Ring;
-	
+
 	char* array;
 
 	if (length == 0)
@@ -190,13 +190,13 @@ uint32_t sizeValidation (void)
 {
 	uint32_t size;
 	char temp;							      // Used in FLUSH
-	
+
 	do							  /* Loop for chacking power of two input for length of buffer */
 			{
 				printf("Please enter the size of the buffer ( in powers of 2 ): ");
 				FLUSH
 				uint8_t validNumber = scanf("%d", &size);
-								
+
 				while((size <= 1)||(validNumber != 1))
 				{
 					printf("\nInvalid input! ");
@@ -207,10 +207,10 @@ uint32_t sizeValidation (void)
 				printf("\nYou entered: %d\n\n", size);
 
 				if (Power_Of_Two(size) == 1)
-					printf("Size must be in powers of 2 and greater than '1', please try again!\n");	
+					printf("Size must be in powers of 2 and greater than '1', please try again!\n");
 
 			} while ( Power_Of_Two(size));
-			
+
 	return size;
 }
 /**)))))))))))))))))))))))))))))))))) sizeValidation () - End ))))))))))))))))))))))))))))))))))))))**/
@@ -247,7 +247,7 @@ void display ( ring_t* ring, int32_t Entries, char* data_out )
 	putchar('\"');
 }
 
-/**;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; update_Buffer () - Start ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; **/
+/**;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; update_Buffer () - Start ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; **/
 
 ring_t* update_Buffer (ring_t * Buffer)
 {
@@ -260,8 +260,8 @@ ring_t* update_Buffer (ring_t * Buffer)
 
 	uint32_t size = Buffer->Length;
 
-	char circular_Q[1024] = {'\0'};		      // Contains ring buffer elements in linear fashion, for presentation purpose.
-	char tempbuffer[1024] = {'\0'};		      // To save contents before resizing
+	char circular_Q[MAX_LENGTH] = {'\0'};		      // Contains ring buffer elements in linear fashion, for presentation purpose.
+	char tempbuffer[MAX_LENGTH] = {'\0'};		      // To save contents before resizing
 
 	for (uint32_t i = 0 ; i < Entries ; i ++)
 		tempbuffer[i] = *(Buffer->Buffer + ((Buffer->Outi + i) & (size-1)));
@@ -273,5 +273,29 @@ ring_t* update_Buffer (ring_t * Buffer)
 
 	return p_update_Buffer;
 }
+/**;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; update_Buffer () - Start ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; **/
 
+/** ''''''''''''''''''''''''''''''' randomValue () - Start '''''''''''''''''''''''''''''''''**/
 
+uint16_t randomValue ( uint32_t Seed, uint16_t modulus)   /**Linear Congruential Generator (LCG).**/
+{
+
+	uint32_t sizeList[] = {2, 4, 8, 16, 32, 64, 128, 256, 512, 1024}; // Randomly selecting a number for buffer length
+
+	const uint32_t a = 1664525;    /* Multiplier */
+	const uint32_t c = 1013904223; /* Increment */
+	uint32_t m = (uint32_t)pow(2,32);       /* Modulus */
+
+	Seed = (a * Seed + c) % m;
+
+	if (modulus == 10)
+		return sizeList[Seed % 10];					//Will retun an elment from sizeList
+
+	else if (modulus == MAX_LENGTH)
+		return (Seed % MAX_LENGTH + 1);					//Will return a number betwee 1 and 1025.
+	else if (modulus == 2)   						// "Max length is defined 1024 chars in this projects"
+		return (Seed % 2);   						// 256 is for random ASCIi char generation used as input (char data_in[])
+	else if (modulus == 256)
+		return (Seed % 256);
+	else return 0;
+}
