@@ -127,8 +127,10 @@ PORTB->PCR[17] = 0x0300; //tx
 		   
    }
 
-    /********************************************************/
-    /* initialize all three LEDs on the FRDM board */
+   char uart_rx(void)
+   {
+	   
+   }
     void gpio_config(void)
     {
     	/*Enable RGB - Green LED PTB19 as GPIO and output*/
@@ -139,7 +141,7 @@ PORTB->PCR[17] = 0x0300; //tx
     void led()
     {
     	/* Toggle Green LED */
-    	PTB->PTOR |=  0x80000;
+    	PTB->PTOR |=  0x80000; 
     }
 
     void delay (int num)

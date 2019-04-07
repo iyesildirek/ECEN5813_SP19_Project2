@@ -40,7 +40,8 @@ void uart_tx(char temp);
 
 //written char (tx)
 
-//check for transmit (rx)
+//check for recieve (rx)
+char uart_rx(void)
 
 //transmit char (rx)
 
