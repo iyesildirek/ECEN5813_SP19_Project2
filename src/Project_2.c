@@ -57,18 +57,33 @@ int main(void) {
     //BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
     BOARD_InitDebugConsole();
-    uart_config();
+    /* Start UART for tx */
+    uart_blocking_config();
     gpio_config();
-    char test = 'A';
+    //unsigned char myString[] = "Hello!?";
+    unsigned char *test = '\n';
+    unsigned char *rx = "test it!\n";
+
     while (1)
     {
-    	uart_tx(test);
+ 	   /* 8 bit data loop*/
+/* 	   for (int i = 0; i < 7; i++) {
+ 	   }
+    	uart_tx(&test);
+    	delay(1);
+*/
+    	uart_rx();
+    	uart_tx(&test);
     	delay(1);
     }
 }
 
 /*UART0 Register Configuration per Ch12 & 39 of manual*/
-void uart_config(void) {
+void uart_blocking_config(void) {
+/*******************************
+* Flag is set to 0 for tx mode
+* and it is set to 1 for rx mode
+******************************/
 /******************************************
  * Clock configuration
  *****************************************/
@@ -98,17 +113,16 @@ UART0->C4 = 0x0E;
  * Enable and set parity to odd and 8bit data
  *******************************************/
 UART0->C1 = 0x00;
-/*Enable transmit*/
-UART0->C2 = 0x08;
-//UART0->C2 = 0x04; // rx enable
+/* Enable both tx and rx*/
+UART0->C2 = 0x0C;
 /*****************************
  * Pin MUX control
  * Set tx port/pin to alt 3
  *****************************/
 /*Enable port B clock */
 SIM->SCGC5 |= 0x0400;
-PORTB->PCR[17] = 0x0300; //tx
-//PORTB->PCR[16] = 0x0300; //for rx
+	PORTB->PCR[17] = 0x0300; //for tx
+	PORTB->PCR[16] = 0x0300; //for rx
 }
 
     void tx_Status(void)
@@ -117,19 +131,27 @@ PORTB->PCR[17] = 0x0300; //tx
  	   while(!(UART0->S1 & 0x80));
     }
 
-   void uart_tx(char temp)
+   void uart_tx(unsigned char *temp)
    {
 	   tx_Status();
-	   UART0->D = temp;
-	   led();
+	   UART0->D = *temp;
 	   /*hold until tx is done b6 of reg*/
 	   while(!(UART0->S1 & 0x40));
-		   
    }
 
-   char uart_rx(void)
+   void rx_Status (void)
    {
-	   
+	   /*hold until rx buffer is full*/
+	   	   while(!(UART0->S1 & 0x20))
+	   	   {}
+   }
+   void uart_rx(void)
+   {
+	   rx_Status();
+	  char temp;
+	  temp = UART0->D;
+	  uart_tx(&temp);
+	  led();
    }
     void gpio_config(void)
     {

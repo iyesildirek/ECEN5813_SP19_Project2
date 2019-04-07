@@ -30,20 +30,20 @@
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - Start {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
-void uart_config(void);
+void uart_blocking_config(void);
 
 //check for transmit (tx)
 void tx_Status(void);
 
 //transmit char (tx)
-void uart_tx(char temp);
-
 //written char (tx)
+void uart_tx(unsigned char temp[]);
 
-//check for recieve (rx)
-char uart_rx(void)
+//check for receive (rx)
+void rx_Status (void);
 
-//transmit char (rx)
+//receive char (rx)
+void uart_rx(void);
 
 //written char (rx)
 
