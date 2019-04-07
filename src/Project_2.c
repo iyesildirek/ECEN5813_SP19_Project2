@@ -39,16 +39,19 @@
 *
 *****************************************************************************/
 /**
-* @file uart.c
-* @brief This source file contains a c program to implement a uart driver.
+* @file Project_2.c
+* @brief This source file contains a c program to implement a UART driver.
 *
 * @authors: Ismail Yesildirek, Bijan Kianian
-* @date April 6 2019
-* @version 1.0
+* @date April 7 2019
+* @version 1.1
 *
 */
 
 #include "uart.h"
+
+/* Select between blocking and non-blocking implementation */
+#define BLOCKING 1
 
 int main(void) {
 
@@ -57,12 +60,19 @@ int main(void) {
     //BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
     BOARD_InitDebugConsole();
-    /* Start UART for tx */
-    uart_blocking_config();
+
+#ifdef BLOCKING = 0
+    /* Start UART for tx and rx*/
+    uart_config();
+#else
+    _disable_irq();
+    uart_config();
+    _enable_irq();
+#endif
     gpio_config();
     //unsigned char myString[] = "Hello!?";
     unsigned char *test = '\n';
-    unsigned char *rx = "test it!\n";
+    //unsigned char *rx = "test it!\n";
 
     while (1)
     {
@@ -72,14 +82,19 @@ int main(void) {
     	uart_tx(&test);
     	delay(1);
 */
+#ifdef BLOCKING = 0
     	uart_rx();
     	uart_tx(&test);
     	delay(1);
+#else
+    	// do nothing
+#endif
+
     }
 }
 
 /*UART0 Register Configuration per Ch12 & 39 of manual*/
-void uart_blocking_config(void) {
+void uart_config(void) {
 /*******************************
 * Flag is set to 0 for tx mode
 * and it is set to 1 for rx mode
@@ -109,20 +124,36 @@ UART0->BDL = 0x0D;
  * By writing 0bxxx01110 (or 14 OSR) to reg C4*/
 UART0->C4 = 0x0E;
 /******************************************
-/* Serial format Configuration
+/* Serial format Configuration.
  * Enable and set parity to odd and 8bit data
  *******************************************/
-UART0->C1 = 0x00;
+UART0->C1 = 0x02;
+#ifdef BLOCKING = 0
 /* Enable both tx and rx*/
 UART0->C2 = 0x0C;
+#else
+/************************
+ * Enable both IRQ tx and rx
+ * by sending 0b11101100 to reg*/
+UART0->C2 = 0xEC;
+#endif
 /*****************************
  * Pin MUX control
  * Set tx port/pin to alt 3
  *****************************/
+#ifdef BLOCKING = 0
 /*Enable port B clock */
 SIM->SCGC5 |= 0x0400;
 	PORTB->PCR[17] = 0x0300; //for tx
 	PORTB->PCR[16] = 0x0300; //for rx
+#else
+	/*Enable UART0 IRQ bit 12*/
+NVIC->ISER[0] |= 0x1000
+	/*Enable port D clock */
+SIM->SCGC5 |= 0x1000
+PORTD->PCR[7] = 0x0300; //for tx
+PORTD->PCR[6] = 0x0300; //for rx
+#endif
 }
 
     void tx_Status(void)
@@ -145,14 +176,16 @@ SIM->SCGC5 |= 0x0400;
 	   	   while(!(UART0->S1 & 0x20))
 	   	   {}
    }
+
    void uart_rx(void)
    {
-	   rx_Status();
+	  rx_Status();
 	  char temp;
 	  temp = UART0->D;
 	  uart_tx(&temp);
 	  led();
    }
+
     void gpio_config(void)
     {
     	/*Enable RGB - Green LED PTB19 as GPIO and output*/
@@ -163,7 +196,7 @@ SIM->SCGC5 |= 0x0400;
     void led()
     {
     	/* Toggle Green LED */
-    	PTB->PTOR |=  0x80000; 
+    	PTB->PTOR |=  0x80000;
     }
 
     void delay (int num)

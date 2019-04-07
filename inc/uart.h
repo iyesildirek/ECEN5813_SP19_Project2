@@ -30,8 +30,7 @@
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - Start {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
-void uart_blocking_config(void);
-
+void uart_config(void);
 //check for transmit (tx)
 void tx_Status(void);
 
