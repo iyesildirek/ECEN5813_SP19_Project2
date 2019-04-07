@@ -60,7 +60,7 @@ int init_suite(void)
 	if(init_flag == 1)
 	{
 		printf("\t\t#################################\n");
-		printf("\t\t#  Circular Buffer Auto Test  #\n");
+		printf("\t\t#  Circular Buffer Manual Test 	#\n");
 		printf("\t\t#################################\n\n");
 	}
 
