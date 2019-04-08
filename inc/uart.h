@@ -36,19 +36,21 @@ void tx_Status(void);
 
 //transmit char (tx)
 //written char (tx)
-void uart_tx(unsigned char temp[]);
+void uart_tx(signed char temp);
 
 //check for receive (rx)
 void rx_Status (void);
 
 //receive char (rx)
-void uart_rx(void);
-
-//written char (rx)
+signed char uart_rx(void);
 
 void gpio_config(void);
+
 void led(void);
 
 void delay (int num);
+
+// ISR Handler
+void PORTA_IRQHandler(void);
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - End {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 

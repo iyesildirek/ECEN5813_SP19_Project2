@@ -1,3 +1,5 @@
+// WORKING COPY !!!
+
 /*
  * Copyright 2016-2018 NXP
  * All rights reserved.
@@ -51,7 +53,7 @@
 #include "uart.h"
 
 /* Select between blocking and non-blocking implementation */
-#define BLOCKING 1
+//#define BLOCKING 1
 
 int main(void) {
 
@@ -60,18 +62,21 @@ int main(void) {
     //BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
     BOARD_InitDebugConsole();
-
-#ifdef BLOCKING = 0
+    signed char new_rx = ' ';
+#if BLOCKING
     /* Start UART for tx and rx*/
     uart_config();
-#else
-    _disable_irq();
-    uart_config();
-    _enable_irq();
-#endif
     gpio_config();
+#else
+    __disable_irq();
+    uart_config();
+    gpio_config();
+    __enable_irq();
+
+#endif
+
     //unsigned char myString[] = "Hello!?";
-    unsigned char *test = '\n';
+    signed char test = '\n';
     //unsigned char *rx = "test it!\n";
 
     while (1)
@@ -82,14 +87,17 @@ int main(void) {
     	uart_tx(&test);
     	delay(1);
 */
-#ifdef BLOCKING = 0
-    	uart_rx();
-    	uart_tx(&test);
+#if BLOCKING
+    	new_rx = uart_rx();
+    	uart_tx(new_rx);
+    	uart_tx(test);
+    	led();
     	delay(1);
 #else
-    	// do nothing
+    	/* Toggle LED */
+    	led();
+    	delay(1);
 #endif
-
     }
 }
 
@@ -128,7 +136,7 @@ UART0->C4 = 0x0E;
  * Enable and set parity to odd and 8bit data
  *******************************************/
 UART0->C1 = 0x02;
-#ifdef BLOCKING = 0
+#if BLOCKING
 /* Enable both tx and rx*/
 UART0->C2 = 0x0C;
 #else
@@ -136,23 +144,27 @@ UART0->C2 = 0x0C;
  * Enable both IRQ tx and rx
  * by sending 0b11101100 to reg*/
 UART0->C2 = 0xEC;
+//UART0->C2 = 0x24;
+/*Enable UART0 IRQ bit 12*/
+NVIC->ISER[0] |= 0x10000000;
+//NVIC->ISER[0] |= 0x00001000; /* enable INT12 (bit 12 of ISER[0]) */
 #endif
 /*****************************
  * Pin MUX control
  * Set tx port/pin to alt 3
  *****************************/
-#ifdef BLOCKING = 0
+#if BLOCKING
 /*Enable port B clock */
 SIM->SCGC5 |= 0x0400;
 	PORTB->PCR[17] = 0x0300; //for tx
 	PORTB->PCR[16] = 0x0300; //for rx
 #else
-	/*Enable UART0 IRQ bit 12*/
-NVIC->ISER[0] |= 0x1000
-	/*Enable port D clock */
-SIM->SCGC5 |= 0x1000
-PORTD->PCR[7] = 0x0300; //for tx
-PORTD->PCR[6] = 0x0300; //for rx
+/*Enable port A clock*/
+SIM->SCGC5 |= 0x0200;
+/* Set pins to alt 2 for uart and IRQ*/
+PORTA->PCR[2] = 0xB0200; //for tx
+PORTA->PCR[1] = 0xB0200; //for rx
+
 #endif
 }
 
@@ -162,10 +174,10 @@ PORTD->PCR[6] = 0x0300; //for rx
  	   while(!(UART0->S1 & 0x80));
     }
 
-   void uart_tx(unsigned char *temp)
+   void uart_tx(signed char temp)
    {
 	   tx_Status();
-	   UART0->D = *temp;
+	   UART0->D = temp;
 	   /*hold until tx is done b6 of reg*/
 	   while(!(UART0->S1 & 0x40));
    }
@@ -177,26 +189,38 @@ PORTD->PCR[6] = 0x0300; //for rx
 	   	   {}
    }
 
-   void uart_rx(void)
+   signed char uart_rx(void)
    {
 	  rx_Status();
-	  char temp;
+	  signed char temp;
 	  temp = UART0->D;
-	  uart_tx(&temp);
-	  led();
+	 // uart_tx(&temp);
+	  return temp;
    }
 
     void gpio_config(void)
     {
+#if BLOCKING
     	/*Enable RGB - Green LED PTB19 as GPIO and output*/
     	PORTB->PCR[19] = 0x100;
     	PTB->PDDR |= 0x80000;
+#else
+    	/*Enable RGB - Blue LED PTD1 as GPIO and output*/
+    	SIM->SCGC5 |= 0x1000;
+		PORTD->PCR[1] = 0x100;
+    	PTD->PDDR |= 0x02;
+#endif
     }
 
-    void led()
+    void led(void)
     {
-    	/* Toggle Green LED */
+#if BLOCKING
+    	/* Toggle pin 19 Green LED */
     	PTB->PTOR |=  0x80000;
+#else
+    	/* Toggle pin 1 Blue LED */
+    	PTD->PTOR |=  0x02;
+#endif
     }
 
     void delay (int num)
@@ -208,3 +232,12 @@ PORTD->PCR[6] = 0x0300; //for rx
     		}
     	}
     }
+
+void PORTA_IRQHandler(void)
+{
+	signed char temp;
+	temp = uart_rx();
+	PORTA->ISFR |= 0x02;
+	uart_tx(temp);
+	PORTA->ISFR |= 0x04;
+}
