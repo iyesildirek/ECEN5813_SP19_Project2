@@ -18,13 +18,15 @@
 *
 */
 
-
+#define RING_H 0;
 #ifndef RING_H
 #define RING_H
 
-
 #include "CUnit/CUnit.h"
 #include "CUnit/Basic.h"
+
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -61,4 +63,3 @@ uint16_t randomValue ( uint32_t , uint16_t );
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - End {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
-#endif
