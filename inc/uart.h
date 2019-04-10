@@ -10,11 +10,11 @@
 *****************************************************************************/
 /**
 * @file uart.h
-* @brief This header file provides the uart prototypes, and include files.
+* @brief This header file provides the uart prototypes and include files.
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
-* @date April 6 2019
-* @version 1.0
+* @date April 10 2019
+* @version 1.1
 *
 */
 
@@ -26,7 +26,11 @@
 #include "MKL25Z4.h"
 #include "fsl_debug_console.h"
 
-//#define
+/*Global variable to store input*/
+uint16_t isr_rx = 0;
+
+/*Global blocking variable to store input*/
+uint16_t new_rx = 0;
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - Start {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
@@ -36,21 +40,21 @@ void tx_Status(void);
 
 //transmit char (tx)
 //written char (tx)
-void uart_tx(signed char temp);
+void uart_tx(uint16_t temp);
 
 //check for receive (rx)
 void rx_Status (void);
 
 //receive char (rx)
-signed char uart_rx(void);
+uint16_t uart_rx(void);
 
 void gpio_config(void);
 
 void led(void);
 
-void delay (int num);
+void delay (uint8_t num);
 
-// ISR Handler
-void PORTA_IRQHandler(void);
+void print_ASCII (void);
+
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - End {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
