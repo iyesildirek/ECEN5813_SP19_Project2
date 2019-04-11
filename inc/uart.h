@@ -27,10 +27,10 @@
 #include "fsl_debug_console.h"
 
 /*Global variable to store input*/
-uint16_t isr_rx = 0;
+uint8_t isr_rx = 0;
 
 /*Global blocking variable to store input*/
-uint16_t new_rx = 0;
+uint8_t new_rx = 0;
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - Start {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
@@ -40,13 +40,13 @@ void tx_Status(void);
 
 //transmit char (tx)
 //written char (tx)
-void uart_tx(uint16_t temp);
+void uart_tx(uint8_t temp);
 
 //check for receive (rx)
 void rx_Status (void);
 
 //receive char (rx)
-uint16_t uart_rx(void);
+uint8_t uart_rx(void);
 
 void gpio_config(void);
 

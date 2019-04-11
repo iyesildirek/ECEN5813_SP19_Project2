@@ -50,22 +50,29 @@
 
 #include "uart.h"
 
-/* Select between blocking and non-blocking implementation */
-//#define BLOCKING 1
+ /* Select between blocking and non-blocking implementation */
+ #define BLOCKING 1
 
-int main (void) {
-
-  	/* Init board hardware. */
-    BOARD_InitBootPins();
-    //BOARD_InitBootClocks();
+int main(void)
+{
+	/* Init board hardware. */
+	BOARD_InitBootPins();
+	//BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
     BOARD_InitDebugConsole();
-//    signed char new_rx = ' ';
+
+    uint8_t test = '\n';
+    //signed char new_rx = ' ';
+    //unsigned char myString[] = "Hello!?";
+    //signed char test = '\n';
+    //unsigned char *rx = "test it!\n";
 
 #if BLOCKING
+	gpio_config();
     /* Start UART for tx and rx*/
     uart_config();
-    gpio_config();
+    print_ASCII();
+	uart_tx('\n');
 #else
     __disable_irq();
     uart_config();
@@ -73,11 +80,6 @@ int main (void) {
     __enable_irq();
 
 #endif
-
-    //unsigned char myString[] = "Hello!?";
-    //signed char test = '\n';
-    uint16_t test = '\n';
-    //unsigned char *rx = "test it!\n";
 
 	while (1)
 	{
@@ -89,20 +91,22 @@ int main (void) {
 */
 #if BLOCKING
     	new_rx = uart_rx();
+    	delay(1);
     	uart_tx(new_rx);
     	uart_tx(test);
     	led();
-    	delay(1);
 #else
-    	/* Toggle LED */
+    	/* Blink LED */
     	led();
-    	delay(1);
+    	delay(30);
 #endif
+
 	}
 }
 
 /*UART0 Register Configuration per Ch12 & 39 of manual*/
-void uart_config(void) {
+void uart_config(void)
+{
 	/*******************************
 	* Flag is set to 0 for tx mode
 	* and it is set to 1 for rx mode
@@ -131,11 +135,12 @@ void uart_config(void) {
 	/* Set data bit mode to 8 or 9 and over sampling ratio
 	 * By writing 0bxxx01110 (or 14 OSR) to reg C4*/
 	UART0->C4 = 0x0E;
+
 	/******************************************
 	/* Serial format Configuration.
 	 * Enable and set parity to odd and 8bit data
 	 *******************************************/
-	UART0->C1 = 0x02;
+	UART0->C1 = 0x00;
 	#if BLOCKING
 	/* Enable both tx and rx */
 	UART0->C2 = 0x0C;
@@ -148,6 +153,7 @@ void uart_config(void) {
 	/* Enable UART0 IRQ bit 12 */
 	NVIC->ISER[0] |= 0x1000;
 	#endif
+
 	/*****************************
 	 * Pin MUX control
 	 * Set tx port/pin to alt 3
@@ -167,6 +173,8 @@ void uart_config(void) {
 	#endif
 }
 
+/******************* delay () - Start *******************/
+
 void gpio_config(void)
 {
 #if BLOCKING
@@ -183,36 +191,40 @@ void gpio_config(void)
 #endif
 }
 
-    void tx_Status(void)
-    {
- 	   /* hold until buffer is empty b7 of reg*/
- 	   while(!(UART0->S1 & 0x80));
-    }
+//############# Transmission - Start ###########
+/* Hold until buffer is empty (TDRE = 1),
+ * and no transmission in progress (TC = 1)*/
+void tx_Status(void)
+{
+	while(!(UART0->S1 & 0xC0)) { }
+}
 
-   void uart_tx(uint16_t temp)
-   {
-	   tx_Status();
-	   UART0->D = temp;
-	   /*hold until tx is done b6 of reg*/
-	   while(!(UART0->S1 & 0x40))
-	   {}
-   }
+/* Data transmission */
+void uart_tx(uint8_t temp)
+{
+	tx_Status();
+	UART0->D = temp; /* send a char */
+}
+//############# Transmission - End ###########
 
-   void rx_Status (void)
-   {
-	   /*hold until rx buffer is full*/
-	   	   while(!(UART0->S1 & 0x20))
-	   	   {}
-   }
 
-   uint16_t uart_rx(void)
-   {
-	  rx_Status();
-	  uint16_t temp;
-	  temp = UART0->D;
-	 // uart_tx(&temp);
-	  return temp;
-   }
+//{{{{{{{{{{{{{ Receiving - Start }}}}}}}}}}}}
+void rx_Status(void)
+{
+	/*hold until rx buffer is full*/
+	while(!(UART0->S1 & 0x20))
+	{ }
+}
+
+/* Data reception */
+uint8_t uart_rx(void)
+{
+	rx_Status();
+	uint8_t temp = UART0->D;
+	return temp;
+}
+//{{{{{{{{{{{{{ Receiving - End }}}}}}}}}}}}}
+
 
 void led(void)
 {
@@ -225,45 +237,49 @@ void led(void)
 #endif
 }
 
+/* Delay n milliseconds @ 20.97 MHZ clock*/
 void delay (uint8_t num)
-{
-	for(int i =0; i<num*1000;i++)
-	{
-		for (int j = 0; j< 1000; j++)
-		{
-		}
-	}
-}
+ {
+ 	for(uint16_t i =0; i<num*20;i++)
+ 	{
+ 		for (uint16_t j = 0; j< 1000; j++)
+ 		{
+ 		}
+ 	}
+ }
+/******************* delay () - End *******************/
 
 //((((((((((((( print_ASCII() - Start )))))))))))))))))))))))
 
 void print_ASCII(void)
 {
 		/*### Printing the ASCII table ###*/
-	for (uint16_t k=0; k <256 ; k++ )
+
+	for (uint16_t k=33; k <256 ; k++ )
 		{
 			uart_tx(k);
-			delay(30);
+			delay(1);
 		}
 	uart_tx('\n');
-	uart_tx('\r');
 }
 //((((((((((((( print_ASCII() - End )))))))))))))))))))))))
 
-/* UART0 interrupt handler */
+
+/*////////////////////// UART0 interrupt handler - Start////////// */
 void UART0_IRQHandler(void)
 {
-	/******TX ISR Handler******/
-	if(PORTA->ISFR |= 0x04)
-	{
-		uart_tx(isr_rx);
-		PORTA->ISFR |= 0x04;
-	}
-
 	/******RX ISR Handler******/
 	if(PORTA->ISFR |= 0x02)
 		{
 		isr_rx = uart_rx();
 		PORTA->ISFR |= 0x02;
 			}
+
+	/******TX ISR Handler******/
+	if(PORTA->ISFR |= 0x04)
+	{
+		uart_tx(isr_rx);
+		PORTA->ISFR |= 0x04;
+	}
 }
+/*////////////////////// UART0 interrupt handler - End////////// */
