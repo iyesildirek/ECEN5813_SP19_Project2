@@ -18,7 +18,7 @@
 *
 */
 
-#define RING_H 0;
+//#define RING_H 0;
 #ifndef RING_H
 #define RING_H
 
