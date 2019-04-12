@@ -48,6 +48,8 @@
 *
 */
 
+//#define FRDM
+#ifdef FRDM
 #include "uart.h"
 
  /* Select between blocking and non-blocking implementation */
@@ -137,7 +139,7 @@ void uart_config(void)
 	UART0->C4 = 0x0E;
 
 	/******************************************
-	/* Serial format Configuration.
+	 * Serial format Configuration.
 	 * Enable and set parity to odd and 8bit data
 	 *******************************************/
 	UART0->C1 = 0x00;
@@ -283,3 +285,4 @@ void UART0_IRQHandler(void)
 	}
 }
 /*////////////////////// UART0 interrupt handler - End////////// */
+#endif
