@@ -48,6 +48,8 @@
 *
 */
 
+//#define FRDM
+#ifdef FRDM
 #include "uart.h"
 #include "ring.h"
 
@@ -320,3 +322,4 @@ void UART0_IRQHandler(void)
 
 }
 /*////////////////////// UART0 interrupt handler - End////////// */
+#endif

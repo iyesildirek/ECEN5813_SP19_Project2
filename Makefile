@@ -11,11 +11,11 @@ srcTest = $(wildcard Unittest/*.c)
 # Generate object files
 obj = $(src:.c=.o) $(srcTest:.c=.o)
 
-test: $(obj)
+CUnit: $(obj)
 	$(CC) -o $@ $^ $(CFLAGS) -lcunit
 
 .PHONY: clean
+
 clean:
-	rm -f $(obj) test
-	
-	
+	rm -f $(obj) CUnit
+

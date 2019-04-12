@@ -18,6 +18,8 @@
 *
 */
 
+//#define FRDM 1
+#ifdef FRDM
 #include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
@@ -58,3 +60,4 @@ void print_ASCII (void);
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - End {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
+#endif

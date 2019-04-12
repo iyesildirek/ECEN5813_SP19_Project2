@@ -18,7 +18,7 @@
 *
 */
 
-#define RING_H 0;
+//#define RING_H 0;
 #ifndef RING_H
 #define RING_H
 
@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-
+#include <math.h>
 
 #define FLUSH 	fflush(stdin); scanf("%c", &temp);		// Flushing key board buffer
 #define MAX_LENGTH 1024
