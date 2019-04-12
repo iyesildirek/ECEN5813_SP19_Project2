@@ -54,12 +54,17 @@
 #define BLOCKING 0				/* Select between blocking and non-blocking implementation */
 
 ring_t *uart_Ring;
-char* buffer;
-uint32_t bufferSize = 256;			/* Initializing ring buffer */
+char buffer[] = {};
+uint32_t bufferSize = 256, counter;			/* Initializing ring buffer */
+typedef struct
+{
+	char c;
+	uint32_t count;
+} charCounts;
 
+charCounts txt;
 
-
-
+charCounts textChars[256];	// array of structures containing character and counts of it from a text
 
 
 
@@ -70,12 +75,7 @@ int main(void)
     BOARD_InitBootPeripherals();
     BOARD_InitDebugConsole();
 
-
-    //uint8_t test = '\n';
-    //signed char new_rx = ' ';
-    //unsigned char myString[] = "Hello!?";
-    //signed char test = '\n';
-    //unsigned char *rx = "test it!\n";
+    uart_Ring = init(bufferSize);
 
 #if BLOCKING
 	gpio_config();
@@ -93,17 +93,29 @@ int main(void)
 
 	while (1)
 	{
-		uart_Ring = init(bufferSize);
-		insert(uart_Ring, isr_rx);
 
-		//uint32_t check_insert = insert(sample, data_in[i]);
-		 //insert(UART_RingBuffer, );
-		/* 8 bit data loop*/
-/* 	   for (int i = 0; i < 7; i++) {
- 	   }
-    	uart_tx(&test);
-    	delay(1);
-*/
+		/* This section is to count the text input chars for each character */
+
+		if((UART0->C2 & UART_C2_RIE_MASK) == 0)		// read per RX interrupt trigger
+		{
+			for (int16_t i; i <= bufferSize ; i++)
+				{
+					insert(uart_Ring, isr_rx);
+					buffer[i] = *(uart_Ring->Buffer + i);
+
+					for (int16_t m = 0 ; m <= 255 ; m++)
+						{if(buffer[i] == m)
+							 counter++;
+						}
+						txt.c = buffer[i];
+						txt.count = counter;
+						textChars[i] = txt;		// adding one element to the array of structure.
+				}
+
+		}
+
+
+
 #if BLOCKING
     	new_rx = uart_rx();
     	delay(1);
@@ -296,7 +308,6 @@ void print_ASCII(void)
 	uart_tx('\r');
 }
 //((((((((((((( print_ASCII() - End )))))))))))))))))))))))
-
 
 /*////////////////////// UART0 interrupt handler - Start////////// */
 
