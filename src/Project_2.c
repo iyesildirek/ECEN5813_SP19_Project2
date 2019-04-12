@@ -49,19 +49,29 @@
 */
 
 #include "uart.h"
+#include "ring.h"
 
- /* Select between blocking and non-blocking implementation */
- #define BLOCKING 1
+#define BLOCKING 0				/* Select between blocking and non-blocking implementation */
+
+ring_t *uart_Ring;
+char* buffer;
+uint32_t bufferSize = 256;			/* Initializing ring buffer */
+
+
+
+
+
+
 
 int main(void)
 {
 	/* Init board hardware. */
 	BOARD_InitBootPins();
-	//BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
     BOARD_InitDebugConsole();
 
-    uint8_t test = '\n';
+
+    //uint8_t test = '\n';
     //signed char new_rx = ' ';
     //unsigned char myString[] = "Hello!?";
     //signed char test = '\n';
@@ -83,6 +93,11 @@ int main(void)
 
 	while (1)
 	{
+		uart_Ring = init(bufferSize);
+		insert(uart_Ring, isr_rx);
+
+		//uint32_t check_insert = insert(sample, data_in[i]);
+		 //insert(UART_RingBuffer, );
 		/* 8 bit data loop*/
 /* 	   for (int i = 0; i < 7; i++) {
  	   }
@@ -93,12 +108,14 @@ int main(void)
     	new_rx = uart_rx();
     	delay(1);
     	uart_tx(new_rx);
-    	uart_tx(test);
+
+    	//uart_tx(test);
     	led();
 #else
     	/* Blink LED */
+
     	led();
-    	delay(30);
+    	delay(20);
 #endif
 
 	}
@@ -114,12 +131,13 @@ void uart_config(void)
 	/******************************************
 	 * Clock configuration
 	 *****************************************/
-	/* Enable UART0 clock */
-	SIM->SCGC4 |= 0x0400;
-	/* Select a clock source*/
-	SIM->SOPT2 |= 0x04000000;
-	/*Disable UART tx and rx prior to modifying reg */
-	UART0->C2 = 0;
+
+	SIM->SCGC4 |= 0x0400;		/* Enable UART0 clock */
+
+	SIM->SOPT2 |= 0x04000000;	/* Select a clock source*/
+
+	UART0->C2 = 0;				/*Disable UART tx and rx prior to modifying reg */
+
 	/******************************************
 	 * Baud Rate Configuration
 	 * To set baud rate we divide selected clock
@@ -128,49 +146,56 @@ void uart_config(void)
 	 * Base clock is 20.97 MHz / 13 / 14
 	 * = 115200 Baud Rate
 	 ******************************************/
-	/*Set BDH to 0bxxx00000*/
-	UART0->BDH = 0x00;
-	/*Set SBR to 0bxxxx1101 or 13 decimal*/
-	UART0->BDL = 0x0D;
-	/* Set data bit mode to 8 or 9 and over sampling ratio
-	 * By writing 0bxxx01110 (or 14 OSR) to reg C4*/
-	UART0->C4 = 0x0E;
+
+	UART0->BDH = 0x00;	/*Set BDH to 0bxxx00000*/
+
+	UART0->BDL = 0x0D;	/*Set SBR to 0bxxxx1101 or 13 decimal*/
+
+	UART0->C4 = 0x0E;	/* Set data bit mode to 8 or 9 and over sampling ratio
+	 	 	 	 	 	 * By writing 0bxxx01110 (or 14 OSR) to reg C4*/
 
 	/******************************************
-	/* Serial format Configuration.
+	 * Serial format Configuration.
 	 * Enable and set parity to odd and 8bit data
 	 *******************************************/
 	UART0->C1 = 0x00;
-	#if BLOCKING
-	/* Enable both tx and rx */
-	UART0->C2 = 0x0C;
-	#else
+
+#if BLOCKING
+	UART0->C2 = 0x0C;	/* Enable both tx and rx */
+#else
+
 	/******************************
 	 * Enable tx, rx, and IRQ rx
 	 * by sending 0b00101100 to reg
 	 ******************************/
-	UART0->C2 = 0x2C;
-	/* Enable UART0 IRQ bit 12 */
+
+	UART0->C2 = 0x2C;	/* Enable UART0 IRQ bit 12 */
 	NVIC->ISER[0] |= 0x1000;
-	#endif
+
+#endif
 
 	/*****************************
 	 * Pin MUX control
 	 * Set tx port/pin to alt 3
 	 *****************************/
-	#if BLOCKING
-	/*Enable port B clock */
-	SIM->SCGC5 |= 0x0400;
-		PORTB->PCR[17] = 0x0300; //for tx
-		PORTB->PCR[16] = 0x0300; //for rx
-	#else
-	/*Enable port A clock*/
-	SIM->SCGC5 |= 0x0200;
 
-	/* Set pins to alt 2 for uart and IRQ */
+#if BLOCKING
+
+	/*Enable port B clock */
+
+	SIM->SCGC5 |= 0x0400;
+	PORTB->PCR[17] = 0x0300; //for tx
+	PORTB->PCR[16] = 0x0300; //for rx
+
+#else
+
+	/*Enable port A clock*/
+
+	SIM->SCGC5 |= 0x0200;
 	PORTA->PCR[2] = 0xB0200; //for tx
 	PORTA->PCR[1] = 0xB0200; //for rx
-	#endif
+
+#endif
 }
 
 /******************* delay () - Start *******************/
@@ -179,27 +204,34 @@ void gpio_config(void)
 {
 #if BLOCKING
 	/*Enable RGB - Green LED PTB19 as GPIO and output*/
+
 	SIM->SCGC5 |= 0x400;
 	PORTB->PCR[19] = 0x100;
 	PTB->PDDR |= 0x80000;
+
 #else
+
 	/*Enable RGB - Blue LED PTD1 as GPIO and output*/
+
 	SIM->SCGC5 |= 0x1000;
 	PORTD->PCR[1] = 0x100;
 	PTD->PDDR = 0x02;
 	PTD->PTOR |= 0x02;
+
 #endif
 }
 
 //############# Transmission - Start ###########
 /* Hold until buffer is empty (TDRE = 1),
  * and no transmission in progress (TC = 1)*/
+
 void tx_Status(void)
 {
 	while(!(UART0->S1 & 0xC0)) { }
 }
 
 /* Data transmission */
+
 void uart_tx(uint8_t temp)
 {
 	tx_Status();
@@ -207,17 +239,15 @@ void uart_tx(uint8_t temp)
 }
 //############# Transmission - End ###########
 
-
 //{{{{{{{{{{{{{ Receiving - Start }}}}}}}}}}}}
+
 void rx_Status(void)
 {
-	/*hold until rx buffer is full*/
-	while(!(UART0->S1 & 0x20))
+	while(!(UART0->S1 & 0x20))	/*hold until rx buffer is full*/
 	{ }
 }
 
-/* Data reception */
-uint8_t uart_rx(void)
+uint8_t uart_rx(void)	/* Data reception */
 {
 	rx_Status();
 	uint8_t temp = UART0->D;
@@ -225,29 +255,31 @@ uint8_t uart_rx(void)
 }
 //{{{{{{{{{{{{{ Receiving - End }}}}}}}}}}}}}
 
-
 void led(void)
 {
 #if BLOCKING
-	/* Toggle pin 19 Green LED */
-	PTB->PTOR |=  0x80000;
+
+	PTB->PTOR |=  0x80000;	/* Toggle pin 19 Green LED */
+
 #else
-	/* Toggle pin 1 Blue LED */
-	PTD->PTOR |= 0x02;
+
+	PTD->PTOR |= 0x02;	/* Toggle pin 1 Blue LED */
+
 #endif
 }
 
-/* Delay n milliseconds @ 20.97 MHZ clock*/
-void delay (uint8_t num)
+/******************* delay () - Start *******************/
+
+void delay (uint8_t num)	/* Delay n milliseconds @ 20.97 MHZ clock*/
  {
- 	for(uint16_t i =0; i<num*20;i++)
+ 	for(uint16_t i =0; i<num;i++)
  	{
- 		for (uint16_t j = 0; j< 1000; j++)
+ 		for (uint16_t j = 0; j< 2000; j++)
  		{
  		}
  	}
  }
-/******************* delay () - End *******************/
+/******************* delay () - End *********************/
 
 //((((((((((((( print_ASCII() - Start )))))))))))))))))))))))
 
@@ -261,19 +293,22 @@ void print_ASCII(void)
 			delay(1);
 		}
 	uart_tx('\n');
+	uart_tx('\r');
 }
 //((((((((((((( print_ASCII() - End )))))))))))))))))))))))
 
 
 /*////////////////////// UART0 interrupt handler - Start////////// */
+
 void UART0_IRQHandler(void)
 {
+
 	/******RX ISR Handler******/
 	if(PORTA->ISFR |= 0x02)
 		{
-		isr_rx = uart_rx();
-		PORTA->ISFR |= 0x02;
-			}
+			isr_rx = uart_rx();
+			PORTA->ISFR |= 0x02;
+		}
 
 	/******TX ISR Handler******/
 	if(PORTA->ISFR |= 0x04)
@@ -281,5 +316,7 @@ void UART0_IRQHandler(void)
 		uart_tx(isr_rx);
 		PORTA->ISFR |= 0x04;
 	}
+
+
 }
 /*////////////////////// UART0 interrupt handler - End////////// */
