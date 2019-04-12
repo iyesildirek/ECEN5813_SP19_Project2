@@ -18,7 +18,7 @@
 *
 */
 
-//#define FRDM 1
+#define FRDM 1
 #ifdef FRDM
 #include <stdio.h>
 #include "board.h"

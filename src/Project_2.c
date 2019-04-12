@@ -43,8 +43,8 @@
 * @brief This source file contains a c program to implement a UART driver.
 *
 * @authors: Ismail Yesildirek, Bijan Kianian
-* @date April 10 2019
-* @version 1.3
+* @date April 11 2019
+* @version 1.4
 *
 */
 

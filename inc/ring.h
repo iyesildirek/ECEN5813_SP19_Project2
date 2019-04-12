@@ -49,7 +49,6 @@ typedef struct
 	uint32_t Outi;
 } ring_t;
 
-uint8_t Buffer_Full , Buffer_Empty ;	// A flag to indicate the buffer state.
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - Start {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
