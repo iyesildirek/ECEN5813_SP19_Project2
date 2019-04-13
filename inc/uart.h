@@ -18,8 +18,8 @@
 *
 */
 
-#define FRDM 1
-#ifdef FRDM
+#define FRDM 0
+#if FRDM
 #include <stdio.h>
 #include "board.h"
 #include "peripherals.h"

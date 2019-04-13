@@ -18,7 +18,7 @@
 *
 */
 
-#define FRDM 1
+#define FRDM 0
 #ifndef RING_H
 #define RING_H
 
@@ -33,11 +33,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-
+#include <math.h>
 
 #define FLUSH 	fflush(stdin); scanf("%c", &temp);		// Flushing key board buffer
 #define MAX_LENGTH 1024
 #define LOOP_COUNT 5
+uint8_t Buffer_Full , Buffer_Empty ;	// A flag to indicate the buffer state.
 
 typedef char uint_8;
 
